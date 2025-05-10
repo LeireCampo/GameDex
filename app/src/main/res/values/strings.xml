@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GameDex</string>
+
+    <!-- Bottom Navigation -->
+    <string name="home">Home</string>
+    <string name="library">Library</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+
+    <!-- Home Screen -->
+    <string name="popular_now">Popular Now</string>
+    <string name="recently_released">Recently Released</string>
+    <string name="upcoming_games">Upcoming Games</string>
+    <string name="recommended_for_you">Recommended for You</string>
+
+    <!-- Library Screen -->
+    <string name="my_library">My Library</string>
+    <string name="add_game">Add Game</string>
+    <string name="manage_tags">Manage Tags</string>
+    <string name="playing">Playing</string>
+    <string name="completed">Completed</string>
+    <string name="backlog">Backlog</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="all_games">All Games</string>
+    <string name="filter_by_tag">Filter by Tag</string>
+    <string name="no_games_found">No games found</string>
+    <string name="add_your_first_game">Add your first game to the library</string>
+
+    <!-- Search Screen -->
+    <string name="search_games">Search Games</string>
+    <string name="search_hint">Enter a game title, publisher, or genre</string>
+    <string name="recent_searches">Recent Searches</string>
+    <string name="no_results_found">No results found</string>
+    <string name="clear">Clear</string>
+
+    <!-- Profile Screen -->
+    <string name="edit_profile">Edit Profile</string>
+    <string name="stats">Stats</string>
+    <string name="favorite_games">Favorite Games</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="games_completed">Games Completed</string>
+    <string name="games_in_library">Games in Library</string>
+    <string name="logout">Logout</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="username_placeholder">Username</string>
+
+    <!-- Game Detail Screen -->
+    <string name="platform">Platform</string>
+    <string name="platforms">Platforms</string>
+    <string name="genre">Genre</string>
+    <string name="genres">Genres</string>
+    <string name="developer">Developer</string>
+    <string name="publisher">Publisher</string>
+    <string name="release_date">Release Date</string>
+    <string name="your_rating">Your Rating</string>
+    <string name="global_rating">Global Rating</string>
+    <string name="add_to_library">Add to Library</string>
+    <string name="in_library">In Library</string>
+    <string name="remove_from_library">Remove from Library</string>
+    <string name="change_status">Change Status</string>
+    <string name="add_tags">Add Tags</string>
+    <string name="description">Description</string>
+    <string name="details">Details</string>
+    <string name="tags">Tags</string>
+
+    <!-- Common -->
+    <string name="game_cover">Game Cover</string>
+
+    <!-- IDs específicos que parecen faltar -->
+    <string name="text_username">Username</string>
+    <string name="text_games_count">Games Count</string>
+    <string name="text_completed_count">Completed Count</string>
+    <string name="recycler_favorite_games">Favorite Games</string>
+    <string name="button_edit_profile">Edit Profile</string>
+    <string name="button_logout">Logout</string>
+
+    <string name="error_loading_games">No se pudieron cargar los juegos</string>
+    <string name="error_searching_games">Error al buscar juegos</string>
+    <string name="unknown_developer">Desarrollador desconocido</string>
+    <string name="no_internet_connection">Sin conexión a Internet</string>
+    <string name="retry">Reintentar</string>
+
+
+    <string name="status">Estado</string>
+    <string name="none">Ninguno</string>
+    <string name="not_available">N/A</string>
+    <string name="add_tag">+ Añadir etiqueta</string>
+    <string name="tag_name">Nombre de la etiqueta</string>
+    <string name="no_tags">Sin etiquetas</string>
+    <string name="tag_added">Etiqueta añadida</string>
+    <string name="tag_removed">Etiqueta eliminada</string>
+    <string name="status_updated">Estado actualizado</string>
+    <string name="rating_updated">Calificación actualizada</string>
+    <string name="error_loading_game_details">Error al cargar los detalles del juego</string>
+    <string name="no_description_available">No hay descripción disponible</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="confirm_logout">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="logged_out">Sesión cerrada correctamente</string>
+    <string name="profile_updated">Perfil actualizado correctamente</string>
+
+
+    <string name="profile_background">Fondo de perfil</string>
+    <string name="try_different_search">Intenta con términos de búsqueda diferentes</string>
+
+    <string name="use_search_to_add">Usa la búsqueda para encontrar y añadir juegos</string>
+    <string name="go">Ir</string>
+
+    <string name="change_background">Cambiar fondo</string>
+    <string name="select_image_from_gallery">Seleccionar imagen de la galería</string>
+    <string name="permission_required">Permiso requerido</string>
+    <string name="storage_permission_message">Se necesita permiso para acceder a los archivos para seleccionar una imagen</string>
+    <string name="error_loading_image">Error al cargar la imagen</string>
+
+
+
+
+
+</resources>
