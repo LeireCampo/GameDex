@@ -16,6 +16,18 @@ import androidx.core.util.Pair;
 public class NavigationUtils {
 
     /**
+     * Aplica un efecto neón a la barra de estado
+     * @param activity Actividad a la que aplicar el efecto
+     * @param colorResId ID del recurso de color
+     */
+    public static void applyNeonStatusBar(Activity activity, int colorResId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+            window.setStatusBarColor(activity.getResources().getColor(colorResId));
+        }
+    }
+
+    /**
      * Inicia una actividad con una transición compartida
      * @param activity Actividad actual
      * @param intent Intent de la actividad a iniciar
@@ -25,9 +37,6 @@ public class NavigationUtils {
     public static void startActivityWithTransition(Activity activity, Intent intent,
                                                    View sharedElement, String transitionName) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Habilitamos la transición en la ventana
-            activity.getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-
             // Creamos las opciones de transición
             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
                     activity,
@@ -53,8 +62,6 @@ public class NavigationUtils {
     public static void startActivityWithMultipleTransition(Activity activity, Intent intent,
                                                            Pair<View, String>... pairs) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity,
                     pairs
@@ -63,18 +70,6 @@ public class NavigationUtils {
             activity.startActivity(intent, options.toBundle());
         } else {
             activity.startActivity(intent);
-        }
-    }
-
-    /**
-     * Aplica un efecto neón a la barra de estado
-     * @param activity Actividad a la que aplicar el efecto
-     * @param colorResId ID del recurso de color
-     */
-    public static void applyNeonStatusBar(Activity activity, int colorResId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = activity.getWindow();
-            window.setStatusBarColor(activity.getResources().getColor(colorResId));
         }
     }
 }

@@ -191,4 +191,21 @@
         <item name="chipStrokeColor">@color/status_wishlist</item>
         <item name="chipIconTint">@color/status_wishlist</item>
     </style>
+
+
+    <!-- Alert dialog -->
+
+    <style name="AlertDialog.Neon" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:background">@color/dark_surface</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorPrimary">@color/neon_blue</item>
+        <item name="colorAccent">@color/neon_pink</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AlertDialog.Neon.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AlertDialog.Neon.Button</item>
+    </style>
+
+    <style name="AlertDialog.Neon.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/neon_blue</item>
+        <item name="rippleColor">@color/neon_blue_transparent</item>
+    </style>
 </resources>

@@ -77,23 +77,13 @@
 
     <string name="error_loading_games">No se pudieron cargar los juegos</string>
     <string name="error_searching_games">Error al buscar juegos</string>
-    <string name="unknown_developer">Desarrollador desconocido</string>
-    <string name="no_internet_connection">Sin conexión a Internet</string>
-    <string name="retry">Reintentar</string>
 
 
-    <string name="status">Estado</string>
-    <string name="none">Ninguno</string>
-    <string name="not_available">N/A</string>
+
     <string name="add_tag">+ Añadir etiqueta</string>
-    <string name="tag_name">Nombre de la etiqueta</string>
+
     <string name="no_tags">Sin etiquetas</string>
-    <string name="tag_added">Etiqueta añadida</string>
-    <string name="tag_removed">Etiqueta eliminada</string>
-    <string name="status_updated">Estado actualizado</string>
-    <string name="rating_updated">Calificación actualizada</string>
-    <string name="error_loading_game_details">Error al cargar los detalles del juego</string>
-    <string name="no_description_available">No hay descripción disponible</string>
+
     <string name="username">Nombre de usuario</string>
     <string name="confirm_logout">¿Estás seguro de que quieres cerrar sesión?</string>
     <string name="logged_out">Sesión cerrada correctamente</string>
@@ -106,6 +96,24 @@
     <string name="use_search_to_add">Usa la búsqueda para encontrar y añadir juegos</string>
     <string name="go">Ir</string>
 
+
+    <!-- Añade estas cadenas al archivo strings.xml -->
+
+    <string name="added_to_library">Juego añadido a tu biblioteca</string>
+    <string name="removed_from_library">Juego eliminado de tu biblioteca</string>
+    <string name="tag_name">Nombre de la etiqueta</string>
+    <string name="tag_added">Etiqueta añadida correctamente</string>
+    <string name="tag_removed">Etiqueta eliminada correctamente</string>
+    <string name="status_updated">Estado actualizado correctamente</string>
+    <string name="rating_updated">Calificación actualizada</string>
+    <string name="error_loading_game_details">Error al cargar los detalles del juego</string>
+    <string name="no_description_available">No hay descripción disponible</string>
+    <string name="unknown_developer">Desarrollador desconocido</string>
+    <string name="no_internet_connection">Sin conexión a Internet</string>
+    <string name="retry">Reintentar</string>
+    <string name="status">Estado</string>
+    <string name="none">Ninguno</string>
+    <string name="not_available">N/A</string>
     <string name="change_background">Cambiar fondo</string>
     <string name="select_image_from_gallery">Seleccionar imagen de la galería</string>
     <string name="permission_required">Permiso requerido</string>
