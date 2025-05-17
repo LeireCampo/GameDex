@@ -21,7 +21,7 @@ import com.example.gamedex.data.local.entity.User;
                 GameTagCrossRef.class,
                 User.class
         },
-        version = 1,
+        version = 2, // Incrementamos la versión por los nuevos campos
         exportSchema = false
 )
 public abstract class GameDexDatabase extends RoomDatabase {
@@ -40,7 +40,7 @@ public abstract class GameDexDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     GameDexDatabase.class,
                                     "gamedex_database")
-                            .fallbackToDestructiveMigration()
+                            .fallbackToDestructiveMigration() // Esto reconstruirá la BD si hay cambio de versión
                             .build();
                 }
             }

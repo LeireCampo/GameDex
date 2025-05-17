@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Círculo exterior con efecto neón -->
+    <path
+        android:name="circle"
+        android:fillColor="#33FFFFFF"
+        android:strokeColor="@color/neon_blue"
+        android:strokeWidth="2"
+        android:pathData="M12,12m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0" />
+
+    <!-- Triángulo de reproducción -->
+    <path
+        android:name="play"
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,8l6,4l-6,4V8z" />
+
+    <!-- Efecto de resplandor (opcional) -->
+    <path
+        android:name="glow"
+        android:fillColor="#00FFFFFF"
+        android:strokeColor="#8000FFFF"
+        android:strokeWidth="1"
+        android:pathData="M12,12m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0" />
+</vector>

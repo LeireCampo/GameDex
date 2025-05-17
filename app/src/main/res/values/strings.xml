@@ -211,5 +211,69 @@
     <string name="follow_developer">Seguir desarrollador</string>
     <string name="other_games_by">Otros juegos de %1$s</string>
 
+    <!-- Strings para trailers y videos -->
+
+    <string name="watch_trailer">Ver trailer</string>
+    <string name="play_trailer">Reproducir trailer</string>
+    <string name="trailer_preview">Vista previa del trailer</string>
+    <string name="trailer_not_available">No hay trailer disponible</string>
+    <string name="open_external_player">Abrir en reproductor externo</string>
+
+    <!-- Strings para capturas de pantalla -->
+    <string name="screenshot">Captura de pantalla</string>
+    <string name="view_screenshot">Ver captura de pantalla</string>
+    <string name="no_screenshots">No hay capturas disponibles</string>
+
+    <!-- Strings para tiendas -->
+    <string name="stores">Tiendas</string>
+    <string name="store_icon">Icono de tienda</string>
+    <string name="buy">Comprar</string>
+    <string name="buy_game">Comprar juego</string>
+    <string name="view_in_store">Ver en tienda</string>
+    <string name="best_price">Mejor precio</string>
+
+    <!-- Strings para UI de visualización de imágenes -->
+
+    <string name="image_saved">Imagen guardada en la galería</string>
+    <string name="image_save_failed">Error al guardar la imagen</string>
+
+    <!-- Strings para mensajes y estados -->
+    <string name="loading_trailer">Cargando trailer…</string>
+
+    <string name="error_loading_trailer">Error al cargar el trailer</string>
+>
+
+    <!-- Strings para nombres de tiendas comunes (opcional) -->
+    <string name="store_steam">Steam</string>
+    <string name="store_playstation">PlayStation Store</string>
+    <string name="store_xbox">Xbox Store</string>
+    <string name="store_nintendo">Nintendo eShop</string>
+    <string name="store_epic">Epic Games Store</string>
+    <string name="store_gog">GOG.com</string>
+    <string name="store_ubisoft">Ubisoft Connect</string>
+    <string name="store_origin">EA App</string>
+    <string name="store_battlenet">Battle.net</string>
+    <string name="store_amazon">Amazon</string>
+
+    <!-- Strings para colores de tiendas en el código -->
+    <string-array name="store_colors">
+        <item>steam_blue</item>
+        <item>playstation_blue</item>
+        <item>xbox_green</item>
+        <item>nintendo_red</item>
+        <item>epic_purple</item>
+        <item>gog_purple</item>
+        <item>ubisoft_blue</item>
+        <item>origin_orange</item>
+        <item>battlenet_blue</item>
+        <item>amazon_orange</item>
+    </string-array>
+
+    <!-- Strings para describir los juegos en compartir -->
+    <string name="share_game">Compartir juego</string>
+    <string name="share_game_text">¡Mira este juego en GameDex! %1$s\n\nDesarrollador: %2$s\nPuntuación: %3$.1f/5.0</string>
+    <string name="game_added_to_library">%1$s añadido a tu biblioteca</string>
+    <string name="game_removed_from_library">%1$s eliminado de tu biblioteca</string>
+
 
 </resources>

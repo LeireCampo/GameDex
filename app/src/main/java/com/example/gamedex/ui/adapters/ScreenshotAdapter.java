@@ -11,29 +11,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.gamedex.R;
-import com.example.gamedex.data.remote.model.ScreenshotListResponse;
 
 import java.util.List;
 
 public class ScreenshotAdapter extends RecyclerView.Adapter<ScreenshotAdapter.ScreenshotViewHolder> {
 
     private final Context context;
-    private List<ScreenshotListResponse.Screenshot> screenshots;
+    private List<String> screenshotUrls;
     private final OnScreenshotClickListener listener;
 
     public interface OnScreenshotClickListener {
-        void onScreenshotClick(ScreenshotListResponse.Screenshot screenshot);
+        void onScreenshotClick(String url, int position);
     }
 
-    public ScreenshotAdapter(Context context, List<ScreenshotListResponse.Screenshot> screenshots, OnScreenshotClickListener listener) {
+    public ScreenshotAdapter(Context context, List<String> screenshotUrls, OnScreenshotClickListener listener) {
         this.context = context;
-        this.screenshots = screenshots;
+        this.screenshotUrls = screenshotUrls;
         this.listener = listener;
     }
 
-    public void updateScreenshots(List<ScreenshotListResponse.Screenshot> newScreenshots) {
-        this.screenshots = newScreenshots;
+    public void updateScreenshots(List<String> newScreenshots) {
+        this.screenshotUrls = newScreenshots;
         notifyDataSetChanged();
     }
 
@@ -46,36 +46,36 @@ public class ScreenshotAdapter extends RecyclerView.Adapter<ScreenshotAdapter.Sc
 
     @Override
     public void onBindViewHolder(@NonNull ScreenshotViewHolder holder, int position) {
-        ScreenshotListResponse.Screenshot screenshot = screenshots.get(position);
-        holder.bind(screenshot);
+        String screenshotUrl = screenshotUrls.get(position);
+
+        Glide.with(context)
+                .load(screenshotUrl)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.ic_launcher_background)
+                        .error(R.drawable.ic_launcher_background))
+                .centerCrop()
+                .into(holder.screenshotImageView);
+
+        // Establecer el listener de click
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onScreenshotClick(screenshotUrl, position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return screenshots != null ? screenshots.size() : 0;
+        return screenshotUrls.size();
     }
 
-    class ScreenshotViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView screenshotImageView;
+    static class ScreenshotViewHolder extends RecyclerView.ViewHolder {
+        ImageView screenshotImageView;
 
-        public ScreenshotViewHolder(@NonNull View itemView) {
+        ScreenshotViewHolder(@NonNull View itemView) {
             super(itemView);
             screenshotImageView = itemView.findViewById(R.id.image_screenshot);
-
-            itemView.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION && listener != null) {
-                    listener.onScreenshotClick(screenshots.get(position));
-                }
-            });
-        }
-
-        void bind(ScreenshotListResponse.Screenshot screenshot) {
-            Glide.with(context)
-                    .load(screenshot.getImageUrl())
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .centerCrop()
-                    .into(screenshotImageView);
         }
     }
 }

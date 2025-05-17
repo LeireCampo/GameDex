@@ -4,11 +4,15 @@
     <color name="neon_blue">#00FFFF</color>         <!-- Azul cian brillante -->
     <color name="neon_pink">#FF00FF</color>         <!-- Magenta brillante -->
     <color name="neon_purple">#9000FF</color>       <!-- Morado para gradientes -->
+    <color name="neon_green">#00FF80</color>        <!-- Verde neón -->
+    <color name="neon_yellow">#FFFF00</color>       <!-- Amarillo neón -->
+    <color name="neon_orange">#FF6E00</color>       <!-- Naranja neón -->
 
     <!-- Colores neón de fondo/superficie -->
     <color name="dark_background">#0F1620</color>   <!-- Fondo oscuro casi negro con toque azulado -->
     <color name="darker_background">#080C10</color> <!-- Fondo más oscuro para contraste -->
     <color name="dark_surface">#131B28</color>      <!-- Superficies oscuras -->
+    <color name="medium_surface">#1C2735</color>    <!-- Superficie media para cards -->
 
     <!-- Colores para Material 3 theme -->
     <color name="md_theme_primary">@color/neon_blue</color>
@@ -28,17 +32,35 @@
 
     <color name="md_theme_surface">@color/dark_surface</color>
     <color name="md_theme_onSurface">#FFFFFF</color>
-    <color name="md_theme_surfaceVariant">#1C2735</color>
+    <color name="md_theme_surfaceVariant">@color/medium_surface</color>
     <color name="md_theme_onSurfaceVariant">#DCDEE1</color>
 
     <color name="md_theme_background">@color/dark_background</color>
     <color name="md_theme_onBackground">#FFFFFF</color>
 
-    <!-- Colores adicionales y estado -->
+    <!-- Colores con transparencia para efectos de brillo -->
+    <color name="neon_blue_transparent">#8000FFFF</color>
+    <color name="neon_pink_transparent">#80FF00FF</color>
+    <color name="neon_purple_transparent">#809000FF</color>
+    <color name="neon_green_transparent">#8000FF80</color>
+
+    <!-- Colores para efectos de resplandor -->
+    <color name="neon_blue_glow">#1A00FFFF</color>
+    <color name="neon_pink_glow">#1AFF00FF</color>
+    <color name="neon_purple_glow">#1A9000FF</color>
+    <color name="neon_green_glow">#1A00FF80</color>
+
+    <!-- Colores para estados de juegos -->
     <color name="status_playing">#00FFFF</color>             <!-- Usar azul neón -->
     <color name="status_completed">#00FF80</color>           <!-- Verde neón -->
     <color name="status_backlog">#FF00FF</color>             <!-- Usar rosa neón -->
     <color name="status_wishlist">#FFAA00</color>            <!-- Naranja neón -->
+
+    <!-- Colores para estados de juegos con transparencia -->
+    <color name="status_playing_transparent">#8000FFFF</color>
+    <color name="status_completed_transparent">#8000FF80</color>
+    <color name="status_backlog_transparent">#80FF00FF</color>
+    <color name="status_wishlist_transparent">#80FFAA00</color>
 
     <!-- Colores para calificaciones -->
     <color name="rating_excellent">#00FF80</color>          <!-- Verde neón -->
@@ -47,38 +69,29 @@
     <color name="rating_below_average">#FFAA00</color>      <!-- Naranja neón -->
     <color name="rating_poor">#FF1A00</color>               <!-- Rojo neón -->
 
-    <!-- Colores legados para compatibilidad -->
+    <!-- Colores para tiendas de videojuegos -->
+    <color name="steam_blue">#1A9FFF</color>
+    <color name="playstation_blue">#0070D1</color>
+    <color name="xbox_green">#107C10</color>
+    <color name="nintendo_red">#E60012</color>
+    <color name="epic_purple">#6A16BF</color>
+    <color name="gog_purple">#8540B3</color>
+    <color name="ubisoft_blue">#0080FF</color>
+    <color name="origin_orange">#FF572A</color>
+    <color name="battlenet_blue">#00AEFF</color>
+    <color name="amazon_orange">#FF9900</color>
+
+    <!-- Colores para fondos de chips -->
+    <color name="chip_background_dark">#16121E</color>
+
+    <!-- Colores básicos estándar -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent_black">#99000000</color>
+
+    <!-- Colores legados para compatibilidad con versiones anteriores -->
     <color name="colorPrimary">@color/neon_blue</color>
     <color name="colorPrimaryDark">@color/darker_background</color>
     <color name="colorAccent">@color/neon_pink</color>
-
-    <!-- Colores básicos -->
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-
-
-    <!-- Añadir estos colores al archivo colors.xml -->
-
-    <!-- Colores neón adicionales para efectos -->
-    <color name="neon_blue_transparent">#8000FFFF</color>
-    <color name="neon_pink_transparent">#80FF00FF</color>
-    <color name="neon_purple_transparent">#809000FF</color>
-
-    <!-- Colores para reflejos neón -->
-    <color name="neon_blue_glow">#1A00FFFF</color>
-    <color name="neon_pink_glow">#1AFF00FF</color>
-    <color name="neon_purple_glow">#1A9000FF</color>
-
-    <!-- Colores de estados con transparencia -->
-    <color name="status_playing_transparent">#8000FFFF</color>
-    <color name="status_completed_transparent">#8000FF80</color>
-    <color name="status_backlog_transparent">#80FF00FF</color>
-    <color name="status_wishlist_transparent">#80FFAA00</color>
-
-    <!-- Colores para los fondos de chips -->
-    <color name="chip_background_dark">#16121E</color>
-
-
-
-
 </resources>

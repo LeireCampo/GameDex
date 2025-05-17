@@ -62,6 +62,30 @@ public class GameDetailResponse {
     @SerializedName("achievements_count")
     private int achievementsCount;
 
+    @SerializedName("clip")
+    private GameResponse.VideoClip videoClip;
+
+    @SerializedName("movies")
+    private List<Movie> movies;
+
+    @SerializedName("screenshots")
+    private List<GameResponse.Screenshot> detailedScreenshots;
+
+    @SerializedName("reddit_url")
+    private String redditUrl;
+
+    @SerializedName("reddit_name")
+    private String redditName;
+
+    @SerializedName("reddit_description")
+    private String redditDescription;
+
+    @SerializedName("reddit_logo")
+    private String redditLogo;
+
+    @SerializedName("reddit_count")
+    private Integer redditCount;
+
     public static class Developer {
         @SerializedName("id")
         private int id;
@@ -71,6 +95,12 @@ public class GameDetailResponse {
 
         @SerializedName("slug")
         private String slug;
+
+        @SerializedName("games_count")
+        private int gamesCount;
+
+        @SerializedName("image_background")
+        private String imageBackground;
 
         public int getId() {
             return id;
@@ -82,6 +112,14 @@ public class GameDetailResponse {
 
         public String getSlug() {
             return slug;
+        }
+
+        public int getGamesCount() {
+            return gamesCount;
+        }
+
+        public String getImageBackground() {
+            return imageBackground;
         }
     }
 
@@ -95,6 +133,12 @@ public class GameDetailResponse {
         @SerializedName("slug")
         private String slug;
 
+        @SerializedName("games_count")
+        private int gamesCount;
+
+        @SerializedName("image_background")
+        private String imageBackground;
+
         public int getId() {
             return id;
         }
@@ -105,6 +149,14 @@ public class GameDetailResponse {
 
         public String getSlug() {
             return slug;
+        }
+
+        public int getGamesCount() {
+            return gamesCount;
+        }
+
+        public String getImageBackground() {
+            return imageBackground;
         }
     }
 
@@ -128,6 +180,52 @@ public class GameDetailResponse {
 
         public String getSlug() {
             return slug;
+        }
+    }
+
+    public static class Movie {
+        @SerializedName("id")
+        private int id;
+
+        @SerializedName("name")
+        private String name;
+
+        @SerializedName("preview")
+        private String previewUrl;
+
+        @SerializedName("data")
+        private MovieData data;
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPreviewUrl() {
+            return previewUrl;
+        }
+
+        public MovieData getData() {
+            return data;
+        }
+    }
+
+    public static class MovieData {
+        @SerializedName("480")
+        private String quality480;
+
+        @SerializedName("max")
+        private String max;
+
+        public String getQuality480() {
+            return quality480;
+        }
+
+        public String getMax() {
+            return max;
         }
     }
 
@@ -206,5 +304,37 @@ public class GameDetailResponse {
 
     public int getAchievementsCount() {
         return achievementsCount;
+    }
+
+    public GameResponse.VideoClip getVideoClip() {
+        return videoClip;
+    }
+
+    public List<Movie> getMovies() {
+        return movies;
+    }
+
+    public List<GameResponse.Screenshot> getDetailedScreenshots() {
+        return detailedScreenshots;
+    }
+
+    public String getRedditUrl() {
+        return redditUrl;
+    }
+
+    public String getRedditName() {
+        return redditName;
+    }
+
+    public String getRedditDescription() {
+        return redditDescription;
+    }
+
+    public String getRedditLogo() {
+        return redditLogo;
+    }
+
+    public Integer getRedditCount() {
+        return redditCount;
     }
 }

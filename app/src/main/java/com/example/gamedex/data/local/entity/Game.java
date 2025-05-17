@@ -23,6 +23,11 @@ public class Game {
     private String status;       // "Playing", "Completed", "Wishlist", etc.
     private long lastUpdated;
 
+    // Nuevos campos
+    private String trailerUrl;        // URL del video/trailer
+    private String screenshotsUrls;   // JSON de URLs de capturas
+    private String storesInfo;        // JSON con información de tiendas
+
     public Game(@NonNull String id, String title) {
         this.id = id;
         this.title = title;
@@ -140,5 +145,30 @@ public class Game {
 
     public void setLastUpdated(long lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    // Getters y setters para los nuevos campos
+    public String getTrailerUrl() {
+        return trailerUrl;
+    }
+
+    public void setTrailerUrl(String trailerUrl) {
+        this.trailerUrl = trailerUrl;
+    }
+
+    public String getScreenshotsUrls() {
+        return screenshotsUrls;
+    }
+
+    public void setScreenshotsUrls(String screenshotsUrls) {
+        this.screenshotsUrls = screenshotsUrls;
+    }
+
+    public String getStoresInfo() {
+        return storesInfo;
+    }
+
+    public void setStoresInfo(String storesInfo) {
+        this.storesInfo = storesInfo;
     }
 }
