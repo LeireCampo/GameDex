@@ -122,5 +122,94 @@
     <string name="error_loading_games">No se pudieron cargar los juegos</string>
 
 
+    <!-- Para la sección de capturas de pantalla -->
+    <string name="screenshots">Capturas de pantalla</string>
+    <string name="game_screenshot">Captura de pantalla del juego</string>
+    <string name="no_screenshots_available">No hay capturas de pantalla disponibles</string>
+    <string name="view_all_screenshots">Ver todas las capturas</string>
+
+    <!-- Para la sección de videos -->
+    <string name="videos">Videos</string>
+    <string name="game_video">Video del juego</string>
+    <string name="no_videos_available">No hay videos disponibles</string>
+    <string name="play_video">Reproducir video</string>
+    <string name="trailer">Trailer</string>
+    <string name="gameplay">Gameplay</string>
+
+    <!-- Para la sección de DLCs y expansiones -->
+    <string name="dlcs_and_expansions">DLCs y expansiones</string>
+    <string name="no_dlcs_available">No hay DLCs disponibles</string>
+    <string name="view_all_dlcs">Ver todos los DLCs</string>
+    <string name="dlc">DLC</string>
+    <string name="expansion">Expansión</string>
+
+    <!-- Para la sección de juegos de la misma serie -->
+    <string name="game_series">Juegos de la serie</string>
+    <string name="no_series_games_available">No hay otros juegos de la serie</string>
+    <string name="view_all_series">Ver toda la serie</string>
+    <string name="same_series">Misma serie</string>
+
+    <!-- Para la sección de tiendas -->
+    <string name="where_to_buy">Dónde comprar</string>
+    <string name="no_stores_available">No hay tiendas disponibles</string>
+    <string name="visit_store">Visitar tienda</string>
+    <string name="buy_now">Comprar ahora</string>
+    <string name="available_at">Disponible en</string>
+
+    <!-- Para la sección de juegos sugeridos/recomendados -->
+    <string name="suggested_games">Juegos recomendados</string>
+    <string name="similar_games">Juegos similares</string>
+    <string name="no_suggestions_available">No hay recomendaciones disponibles</string>
+    <string name="you_might_like">También te podría gustar</string>
+
+    <!-- Para los diálogos y mensajes -->
+    <string name="loading_screenshots">Cargando capturas de pantalla…</string>
+    <string name="loading_videos">Cargando videos…</string>
+    <string name="loading_stores">Cargando tiendas…</string>
+    <string name="error_loading_screenshots">Error al cargar las capturas de pantalla</string>
+    <string name="error_loading_videos">Error al cargar los videos</string>
+    <string name="error_loading_stores">Error al cargar las tiendas</string>
+
+
+    <!-- Para la galería de imágenes -->
+    <string name="image_of">Imagen %1$d de %2$d</string>
+    <string name="previous">Anterior</string>
+    <string name="next">Siguiente</string>
+    <string name="close">Cerrar</string>
+    <string name="share">Compartir</string>
+    <string name="download">Descargar</string>
+
+    <!-- Para la búsqueda avanzada -->
+    <string name="advanced_search">Búsqueda avanzada</string>
+    <string name="filter_by_platform">Filtrar por plataforma</string>
+    <string name="filter_by_genre">Filtrar por género</string>
+    <string name="filter_by_year">Filtrar por año</string>
+    <string name="filter_by_rating">Filtrar por valoración</string>
+    <string name="apply_filters">Aplicar filtros</string>
+    <string name="clear_filters">Borrar filtros</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="sort_name">Nombre</string>
+    <string name="sort_rating">Valoración</string>
+    <string name="sort_released">Fecha de lanzamiento</string>
+    <string name="sort_popularity">Popularidad</string>
+    <string name="ascending">Ascendente</string>
+    <string name="descending">Descendente</string>
+
+    <!-- Para características adicionales -->
+    <string name="metacritic_score">Puntuación Metacritic</string>
+    <string name="esrb_rating">Clasificación ESRB</string>
+    <string name="time_to_beat">Tiempo de juego</string>
+    <string name="main_story">Historia principal</string>
+    <string name="completionist">Al 100%</string>
+    <string name="hours">horas</string>
+    <string name="achievements">Logros</string>
+    <string name="no_achievements">No hay logros disponibles</string>
+    <string name="view_all_achievements">Ver todos los logros</string>
+    <string name="system_requirements">Requisitos del sistema</string>
+    <string name="minimum">Mínimos</string>
+    <string name="recommended">Recomendados</string>
+    <string name="follow_developer">Seguir desarrollador</string>
+    <string name="other_games_by">Otros juegos de %1$s</string>
+
 
 </resources>

@@ -156,14 +156,14 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
                 }
             }
 
-            // Aplicar color a la tarjeta
+            // Aplicar color a la tarjeta con borde más grueso
             cardView.setStrokeColor(ContextCompat.getColor(context, strokeColor));
-            cardView.setStrokeWidth(2);
-            cardView.setCardElevation(8);
+            cardView.setStrokeWidth(4); // Cambiado de 2 a 4 para hacer el borde más grueso
+            cardView.setCardElevation(12); // Aumentado para dar más profundidad
 
             // Aplicar color neón al título
             gameTitleTextView.setTextColor(ContextCompat.getColor(context, strokeColor));
-            gameTitleTextView.setShadowLayer(4, 0, 0, ContextCompat.getColor(context, strokeColor));
+            gameTitleTextView.setShadowLayer(6, 0, 0, ContextCompat.getColor(context, strokeColor)); // Aumentado de 4 a 6
 
             // Aplicar color neón a la valoración
             textRating.setTextColor(ContextCompat.getColor(context, strokeColor));
@@ -176,7 +176,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
 
         private void resetStyle() {
             cardView.setStrokeColor(ContextCompat.getColor(context, R.color.md_theme_surfaceVariant));
-            cardView.setStrokeWidth(0);
+            cardView.setStrokeWidth(1);
             cardView.setCardElevation(4);
 
             gameTitleTextView.setTextColor(ContextCompat.getColor(context, R.color.white));
