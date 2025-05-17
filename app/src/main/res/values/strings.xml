@@ -75,7 +75,6 @@
     <string name="button_edit_profile">Edit Profile</string>
     <string name="button_logout">Logout</string>
 
-    <string name="error_loading_games">No se pudieron cargar los juegos</string>
     <string name="error_searching_games">Error al buscar juegos</string>
 
 
@@ -120,7 +119,7 @@
     <string name="storage_permission_message">Se necesita permiso para acceder a los archivos para seleccionar una imagen</string>
     <string name="error_loading_image">Error al cargar la imagen</string>
 
-
+    <string name="error_loading_games">No se pudieron cargar los juegos</string>
 
 
 

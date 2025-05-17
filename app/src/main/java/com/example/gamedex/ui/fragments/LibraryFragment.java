@@ -6,9 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,12 +21,10 @@ import com.example.gamedex.data.local.entity.Game;
 import com.example.gamedex.ui.activities.GameDetailActivity;
 import com.example.gamedex.ui.adapters.GameAdapter;
 import com.example.gamedex.ui.viewmodels.LibraryViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -65,9 +64,7 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
         setupFab();
 
         if (buttonAddFirstGame != null) {
-            buttonAddFirstGame.setOnClickListener(v -> {
-                navigateToSearch();
-            });
+            buttonAddFirstGame.setOnClickListener(v -> navigateToSearch());
         }
     }
 
@@ -186,28 +183,14 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
     }
 
     private void navigateToSearch() {
-        // En una app real deberías lanzar una actividad para buscar y añadir juegos
-        // En este ejemplo, mostraremos un snackbar con efecto neón
-        Snackbar snackbar = Snackbar.make(
-                requireView(),
-                R.string.use_search_to_add,
-                Snackbar.LENGTH_LONG
-        );
-
-        View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.dark_surface));
-        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.neon_blue));
-
-        snackbar.setAction(R.string.go, view -> {
-            // Cambiar al fragmento de búsqueda
-            if (getActivity() != null) {
-                getActivity().findViewById(R.id.navigation_search).performClick();
+        // Cambiar directamente al fragmento de búsqueda
+        if (getActivity() != null) {
+            // Obtener el BottomNavigationView y seleccionar el ítem de búsqueda
+            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.navigation_search);
             }
-        });
-
-        snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.neon_pink));
-        snackbar.show();
+        }
     }
 
     @Override

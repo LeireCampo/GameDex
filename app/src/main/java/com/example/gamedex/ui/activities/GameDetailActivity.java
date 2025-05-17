@@ -1,11 +1,9 @@
 package com.example.gamedex.ui.activities;
 
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -23,9 +20,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.gamedex.R;
 import com.example.gamedex.data.local.entity.Game;
 import com.example.gamedex.data.local.entity.Tag;
-import com.example.gamedex.util.NavigationUtils;
-import com.example.gamedex.util.NetworkUtils;
 import com.example.gamedex.ui.viewmodels.GameDetailViewModel;
+import com.example.gamedex.util.NetworkUtils;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
@@ -40,8 +37,8 @@ public class GameDetailActivity extends AppCompatActivity {
     private ImageView imageGameCover;
     private TextView textGameTitle;
     private TextView textGameDeveloper;
-    private Button buttonAddToLibrary;
-    private Button buttonChangeStatus;
+    private MaterialButton buttonAddToLibrary;
+    private MaterialButton buttonChangeStatus;
     private ChipGroup chipGroupTags;
     private RatingBar ratingBar;
     private TextView textPlatforms;
@@ -50,7 +47,7 @@ public class GameDetailActivity extends AppCompatActivity {
     private TextView textDescription;
     private Toolbar toolbar;
     private ProgressBar progressBar;
-    private View rootLayout;
+    private View contentLayout;
 
     private GameDetailViewModel viewModel;
     private String gameId;
@@ -59,10 +56,6 @@ public class GameDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Aplicar color neón a la barra de estado
-        NavigationUtils.applyNeonStatusBar(this, R.color.dark_background);
-
         setContentView(R.layout.activity_game_detail);
 
         initViews();
@@ -70,7 +63,6 @@ public class GameDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false); // Ocultamos el título predeterminado
         }
 
         gameId = getIntent().getStringExtra("game_id");
@@ -82,7 +74,7 @@ public class GameDetailActivity extends AppCompatActivity {
 
         // Verificar conexión a Internet
         if (!NetworkUtils.isNetworkAvailable(this)) {
-            Snackbar.make(rootLayout, R.string.no_internet_connection, Snackbar.LENGTH_LONG)
+            Snackbar.make(contentLayout, R.string.no_internet_connection, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry, v -> loadGameData())
                     .show();
         }
@@ -97,7 +89,7 @@ public class GameDetailActivity extends AppCompatActivity {
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
-        rootLayout = findViewById(R.id.root_layout);
+        contentLayout = findViewById(R.id.content_layout);
         imageGameCover = findViewById(R.id.image_game_cover);
         textGameTitle = findViewById(R.id.text_game_title);
         textGameDeveloper = findViewById(R.id.text_game_developer);
@@ -116,13 +108,14 @@ public class GameDetailActivity extends AppCompatActivity {
                 textPlatforms == null || textGenres == null ||
                 textReleaseDate == null || textDescription == null) {
             Log.e("GameDetailActivity", "Uno o más TextViews no se han podido inicializar");
+            // Podemos añadir aquí un Toast para mostrar un error al usuario
             Toast.makeText(this, "Error al cargar la interfaz", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void loadGameData() {
         progressBar.setVisibility(View.VISIBLE);
-        // No ocultamos el layout para evitar parpadeos en la UI
+        contentLayout.setVisibility(View.GONE);
     }
 
     private void setupObservers() {
@@ -139,6 +132,7 @@ public class GameDetailActivity extends AppCompatActivity {
         // Observar datos actualizados de la API
         viewModel.getGameDetails().observe(this, game -> {
             progressBar.setVisibility(View.GONE);
+            contentLayout.setVisibility(View.VISIBLE);
 
             if (game != null) {
                 // Mantener el estado de biblioteca y tags
@@ -146,16 +140,9 @@ public class GameDetailActivity extends AppCompatActivity {
                 updateUI(game);
             } else {
                 // Error al cargar los datos del juego
-                Snackbar snackbar = Snackbar.make(rootLayout, R.string.error_loading_game_details, Snackbar.LENGTH_LONG)
-                        .setAction(R.string.retry, v -> loadGameData());
-
-                View snackbarView = snackbar.getView();
-                snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_surface));
-                TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-                textView.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
-
-                snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.neon_pink));
-                snackbar.show();
+                Snackbar.make(contentLayout, R.string.error_loading_game_details, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.retry, v -> loadGameData())
+                        .show();
             }
         });
     }
@@ -165,20 +152,6 @@ public class GameDetailActivity extends AppCompatActivity {
             viewModel.toggleInLibrary();
             isGameInLibrary = !isGameInLibrary;
             updateLibraryStatus(isGameInLibrary, null);
-
-            // Mostrar un snackbar con efecto neón
-            Snackbar snackbar = Snackbar.make(
-                    rootLayout,
-                    isGameInLibrary ? R.string.add_to_library : R.string.remove_from_library,
-                    Snackbar.LENGTH_SHORT
-            );
-
-            View snackbarView = snackbar.getView();
-            snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_surface));
-            TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
-
-            snackbar.show();
         });
 
         buttonChangeStatus.setOnClickListener(v -> {
@@ -188,19 +161,7 @@ public class GameDetailActivity extends AppCompatActivity {
         ratingBar.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
             if (fromUser) {
                 viewModel.updateUserRating(rating);
-
-                Snackbar snackbar = Snackbar.make(
-                        rootLayout,
-                        getString(R.string.rating_updated),
-                        Snackbar.LENGTH_SHORT
-                );
-
-                View snackbarView = snackbar.getView();
-                snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_surface));
-                TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-                textView.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
-
-                snackbar.show();
+                Snackbar.make(contentLayout, getString(R.string.rating_updated), Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -214,31 +175,12 @@ public class GameDetailActivity extends AppCompatActivity {
                 getString(R.string.wishlist)
         };
 
-        int[] statusColors = {
-                R.color.status_playing,
-                R.color.status_completed,
-                R.color.status_backlog,
-                R.color.status_wishlist
-        };
-
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         builder.setTitle(R.string.change_status)
                 .setItems(statusDisplay, (dialog, which) -> {
                     viewModel.updateGameStatus(statuses[which]);
                     updateLibraryStatus(true, statuses[which]);
-
-                    Snackbar snackbar = Snackbar.make(
-                            rootLayout,
-                            getString(R.string.status_updated),
-                            Snackbar.LENGTH_SHORT
-                    );
-
-                    View snackbarView = snackbar.getView();
-                    snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_surface));
-                    TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-                    textView.setTextColor(ContextCompat.getColor(this, statusColors[which]));
-
-                    snackbar.show();
+                    Snackbar.make(contentLayout, getString(R.string.status_updated), Snackbar.LENGTH_SHORT).show();
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .create()
@@ -341,54 +283,38 @@ public class GameDetailActivity extends AppCompatActivity {
     private void updateLibraryStatus(boolean inLibrary, String status) {
         if (inLibrary) {
             buttonAddToLibrary.setText(R.string.remove_from_library);
-            buttonAddToLibrary.setTextColor(ContextCompat.getColor(this, R.color.darker_background));
-            buttonAddToLibrary.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.neon_blue));
-
             buttonChangeStatus.setVisibility(View.VISIBLE);
 
             if (status != null) {
                 String displayStatus = getString(R.string.status) + ": ";
-                int statusColor = R.color.neon_blue;
-
                 switch (status) {
                     case "playing":
                         displayStatus += getString(R.string.playing);
-                        statusColor = R.color.status_playing;
+                        buttonChangeStatus.setStrokeColor(getColorStateList(R.color.status_playing));
                         break;
                     case "completed":
                         displayStatus += getString(R.string.completed);
-                        statusColor = R.color.status_completed;
+                        buttonChangeStatus.setStrokeColor(getColorStateList(R.color.status_completed));
                         break;
                     case "backlog":
                         displayStatus += getString(R.string.backlog);
-                        statusColor = R.color.status_backlog;
+                        buttonChangeStatus.setStrokeColor(getColorStateList(R.color.status_backlog));
                         break;
                     case "wishlist":
                         displayStatus += getString(R.string.wishlist);
-                        statusColor = R.color.status_wishlist;
+                        buttonChangeStatus.setStrokeColor(getColorStateList(R.color.status_wishlist));
                         break;
                     default:
                         displayStatus += getString(R.string.none);
+                        buttonChangeStatus.setStrokeColor(getColorStateList(R.color.neon_blue));
                 }
-
                 buttonChangeStatus.setText(displayStatus);
-                buttonChangeStatus.setTextColor(ContextCompat.getColor(this, statusColor));
-
-                if (buttonChangeStatus.getStrokeColor() != null) {
-                    buttonChangeStatus.setStrokeColor(ContextCompat.getColorStateList(this, statusColor));
-                }
             } else {
                 buttonChangeStatus.setText(R.string.change_status);
-                buttonChangeStatus.setTextColor(ContextCompat.getColor(this, R.color.neon_pink));
-
-                if (buttonChangeStatus.getStrokeColor() != null) {
-                    buttonChangeStatus.setStrokeColor(ContextCompat.getColorStateList(this, R.color.neon_pink));
-                }
+                buttonChangeStatus.setStrokeColor(getColorStateList(R.color.neon_blue));
             }
         } else {
             buttonAddToLibrary.setText(R.string.add_to_library);
-            buttonAddToLibrary.setTextColor(ContextCompat.getColor(this, R.color.darker_background));
-            buttonAddToLibrary.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.neon_pink));
             buttonChangeStatus.setVisibility(View.GONE);
         }
     }
@@ -400,8 +326,6 @@ public class GameDetailActivity extends AppCompatActivity {
             Chip chip = new Chip(this);
             chip.setText(R.string.no_tags);
             chip.setClickable(false);
-            chip.setTextColor(ContextCompat.getColor(this, R.color.white));
-            chip.setChipBackgroundColor(ContextCompat.getColorStateList(this, R.color.chip_background_dark));
             chipGroupTags.addView(chip);
             return;
         }
@@ -409,73 +333,31 @@ public class GameDetailActivity extends AppCompatActivity {
         for (Tag tag : tags) {
             Chip chip = new Chip(this);
             chip.setText(tag.getName());
-
-            // Verificar si existe el icono de cierre
-            try {
-                chip.setCloseIcon(getDrawable(R.drawable.ic_close));
-                chip.setCloseIconVisible(true);
-            } catch (Exception e) {
-                // Si no existe el icono, no mostramos el botón de cerrar
-                chip.setCloseIconVisible(false);
-            }
-
-            // Estilo neón para el chip
-            chip.setTextColor(ContextCompat.getColor(this, R.color.white));
-            chip.setChipBackgroundColor(ContextCompat.getColorStateList(this, R.color.chip_background_dark));
-            chip.setChipStrokeWidth(1);
-            chip.setChipStrokeColor(ContextCompat.getColorStateList(this, R.color.neon_blue));
-
-            // Si el tag tiene un color, usarlo para el borde
-            if (tag.getColor() != null && !tag.getColor().isEmpty()) {
-                try {
-                    int color = android.graphics.Color.parseColor(tag.getColor());
-                    chip.setChipStrokeColor(ColorStateList.valueOf(color));
-                } catch (Exception e) {
-                    // Si hay error en el formato del color, usar el predeterminado
-                    chip.setChipStrokeColor(ContextCompat.getColorStateList(this, R.color.neon_blue));
-                }
-            }
-
+            chip.setCloseIcon(getDrawable(R.drawable.ic_close));
+            chip.setCloseIconVisible(true);
             chip.setOnCloseIconClickListener(v -> {
                 viewModel.removeTagFromGame(tag.getId());
-
-                Snackbar snackbar = Snackbar.make(
-                        rootLayout,
-                        getString(R.string.tag_removed),
-                        Snackbar.LENGTH_SHORT
-                );
-
-                View snackbarView = snackbar.getView();
-                snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_surface));
-                TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-                textView.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
-
-                snackbar.show();
+                Snackbar.make(contentLayout, getString(R.string.tag_removed), Snackbar.LENGTH_SHORT).show();
             });
-
             chipGroupTags.addView(chip);
         }
 
         // Añadir chip "Añadir etiqueta"
         Chip addChip = new Chip(this);
         addChip.setText(getString(R.string.add_tag));
-        addChip.setChipBackgroundColor(ContextCompat.getColorStateList(this, R.color.chip_background_dark));
-        addChip.setChipStrokeWidth(1);
-        addChip.setChipStrokeColor(ContextCompat.getColorStateList(this, R.color.neon_pink));
-        addChip.setTextColor(ContextCompat.getColor(this, R.color.neon_pink));
-
+        addChip.setChipBackgroundColorResource(android.R.color.transparent);
+        addChip.setChipStrokeWidth(1f);
         addChip.setOnClickListener(v -> {
             showAddTagDialog();
         });
-
         chipGroupTags.addView(addChip);
     }
 
     private void showAddTagDialog() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_add_tag, null);
         final com.google.android.material.textfield.TextInputEditText editTagName = view.findViewById(R.id.edit_tag_name);
 
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         builder.setTitle(R.string.add_tag)
                 .setView(view)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -486,19 +368,7 @@ public class GameDetailActivity extends AppCompatActivity {
                         Tag newTag = new Tag(tagName, "#FF5722");
                         newTag.setId((int) (System.currentTimeMillis() % 1000));
                         viewModel.addTagToGame(newTag.getId());
-
-                        Snackbar snackbar = Snackbar.make(
-                                rootLayout,
-                                getString(R.string.tag_added),
-                                Snackbar.LENGTH_SHORT
-                        );
-
-                        View snackbarView = snackbar.getView();
-                        snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.dark_surface));
-                        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-                        textView.setTextColor(ContextCompat.getColor(this, R.color.neon_pink));
-
-                        snackbar.show();
+                        Snackbar.make(contentLayout, getString(R.string.tag_added), Snackbar.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
