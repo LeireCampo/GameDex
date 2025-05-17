@@ -143,4 +143,52 @@
         <item name="strokeColor">@color/neon_pink</item>
         <item name="android:textColor">@color/neon_pink</item>
     </style>
+
+    <!-- Estilo para botones con brillo neón -->
+    <style name="Widget.GameDex.Button.Neon" parent="Widget.Material3.Button">
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textColor">@color/darker_background</item>
+        <item name="backgroundTint">@color/neon_blue</item>
+        <item name="android:shadowColor">#80000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">4</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- Estilos para chips neón -->
+    <style name="Widget.GameDex.Chip.Neon" parent="Widget.Material3.Chip.Filter">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">@color/neon_blue</item>
+        <item name="chipBackgroundColor">@color/dark_surface</item>
+        <item name="rippleColor">@color/neon_blue</item>
+        <item name="android:elevation">2dp</item>
+        <item name="chipSurfaceColor">@color/dark_surface</item>
+    </style>
+
+    <style name="Widget.GameDex.Chip.Neon.Playing" parent="Widget.GameDex.Chip.Neon">
+        <item name="chipStrokeColor">@color/status_playing</item>
+        <item name="chipIconTint">@color/status_playing</item>
+    </style>
+
+    <style name="Widget.GameDex.Chip.Neon.Completed" parent="Widget.GameDex.Chip.Neon">
+        <item name="chipStrokeColor">@color/status_completed</item>
+        <item name="chipIconTint">@color/status_completed</item>
+    </style>
+
+    <style name="Widget.GameDex.Chip.Neon.Backlog" parent="Widget.GameDex.Chip.Neon">
+        <item name="chipStrokeColor">@color/status_backlog</item>
+        <item name="chipIconTint">@color/status_backlog</item>
+    </style>
+
+    <style name="Widget.GameDex.Chip.Neon.Wishlist" parent="Widget.GameDex.Chip.Neon">
+        <item name="chipStrokeColor">@color/status_wishlist</item>
+        <item name="chipIconTint">@color/status_wishlist</item>
+    </style>
 </resources>

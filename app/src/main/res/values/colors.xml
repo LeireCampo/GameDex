@@ -55,4 +55,26 @@
     <!-- Colores básicos -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+
+    <!-- Añadir estos colores al archivo colors.xml -->
+
+    <!-- Colores neón adicionales para efectos -->
+    <color name="neon_blue_transparent">#8000FFFF</color>
+    <color name="neon_pink_transparent">#80FF00FF</color>
+    <color name="neon_purple_transparent">#809000FF</color>
+
+    <!-- Colores para reflejos neón -->
+    <color name="neon_blue_glow">#1A00FFFF</color>
+    <color name="neon_pink_glow">#1AFF00FF</color>
+    <color name="neon_purple_glow">#1A9000FF</color>
+
+    <!-- Colores de estados con transparencia -->
+    <color name="status_playing_transparent">#8000FFFF</color>
+    <color name="status_completed_transparent">#8000FF80</color>
+    <color name="status_backlog_transparent">#80FF00FF</color>
+    <color name="status_wishlist_transparent">#80FFAA00</color>
+
+    <!-- Colores para los fondos de chips -->
+    <color name="chip_background_dark">#16121E</color>
 </resources>

@@ -6,10 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,6 +25,8 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 
 public class LibraryFragment extends Fragment implements GameAdapter.OnGameClickListener {
@@ -37,6 +38,8 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
     private Toolbar toolbar;
     private GameAdapter gameAdapter;
     private LibraryViewModel viewModel;
+    private View emptyStateCard;
+    private View buttonAddFirstGame;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,11 +56,19 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
         filterChipGroup = view.findViewById(R.id.filter_chip_group);
         fabAddGame = view.findViewById(R.id.fab_add_game);
         toolbar = view.findViewById(R.id.toolbar);
+        emptyStateCard = view.findViewById(R.id.empty_state_card);
+        buttonAddFirstGame = view.findViewById(R.id.button_add_first_game);
 
         setupViewModel();
         setupRecyclerView();
         setupFilterChips();
         setupFab();
+
+        if (buttonAddFirstGame != null) {
+            buttonAddFirstGame.setOnClickListener(v -> {
+                navigateToSearch();
+            });
+        }
     }
 
     private void setupViewModel() {
@@ -70,10 +81,10 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
 
                 // Mostrar mensaje de biblioteca vacía si no hay juegos
                 if (games.isEmpty()) {
-                    textEmptyLibrary.setVisibility(View.VISIBLE);
+                    if (emptyStateCard != null) emptyStateCard.setVisibility(View.VISIBLE);
                     recyclerLibrary.setVisibility(View.GONE);
                 } else {
-                    textEmptyLibrary.setVisibility(View.GONE);
+                    if (emptyStateCard != null) emptyStateCard.setVisibility(View.GONE);
                     recyclerLibrary.setVisibility(View.VISIBLE);
                 }
             }
@@ -106,27 +117,33 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
                 "wishlist"
         };
 
-        int[] chipColors = {
-                R.color.white, // All games
-                R.color.status_playing,
-                R.color.status_completed,
-                R.color.status_backlog,
-                R.color.status_wishlist
+        int[] chipStyles = {
+                R.style.Widget_GameDex_Chip_Neon,
+                R.style.Widget_GameDex_Chip_Neon_Playing,
+                R.style.Widget_GameDex_Chip_Neon_Completed,
+                R.style.Widget_GameDex_Chip_Neon_Backlog,
+                R.style.Widget_GameDex_Chip_Neon_Wishlist
         };
 
         for (int i = 0; i < filters.length; i++) {
             final String filter = filterValues[i];
-            Chip chip = new Chip(requireContext());
+            Chip chip = new Chip(requireContext(), null, chipStyles[i]);
             chip.setText(filters[i]);
             chip.setCheckable(true);
             chip.setClickable(true);
             chip.setTag(filter);
 
-            // Personalizar apariencia del chip
-            if (i > 0) { // Skip "All games" chip
-                chip.setChipBackgroundColorResource(chipColors[i]);
-                chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-            }
+            // Añadir efecto neón al seleccionar
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    // Aumentar el efecto neón cuando está seleccionado
+                    chip.setShadowLayer(8, 0, 0, ContextCompat.getColor(requireContext(),
+                            getColorForStatus(filter)));
+                } else {
+                    // Quitar el efecto de sombra cuando no está seleccionado
+                    chip.setShadowLayer(0, 0, 0, 0);
+                }
+            });
 
             // Establecer chip seleccionado por defecto
             if (filter.equals("all")) {
@@ -147,19 +164,50 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
         });
     }
 
+    private int getColorForStatus(String status) {
+        switch (status) {
+            case "playing":
+                return R.color.status_playing;
+            case "completed":
+                return R.color.status_completed;
+            case "backlog":
+                return R.color.status_backlog;
+            case "wishlist":
+                return R.color.status_wishlist;
+            default:
+                return R.color.neon_blue;
+        }
+    }
+
     private void setupFab() {
         fabAddGame.setOnClickListener(v -> {
-            // En una app real deberías lanzar una actividad para buscar y añadir juegos
-            // En este ejemplo, mostraremos un snackbar sugiriendo usar la búsqueda
-            Snackbar.make(v, R.string.use_search_to_add, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.go, view -> {
-                        // Cambiar al fragmento de búsqueda
-                        if (getActivity() != null) {
-                            getActivity().findViewById(R.id.navigation_search).performClick();
-                        }
-                    })
-                    .show();
+            navigateToSearch();
         });
+    }
+
+    private void navigateToSearch() {
+        // En una app real deberías lanzar una actividad para buscar y añadir juegos
+        // En este ejemplo, mostraremos un snackbar con efecto neón
+        Snackbar snackbar = Snackbar.make(
+                requireView(),
+                R.string.use_search_to_add,
+                Snackbar.LENGTH_LONG
+        );
+
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.dark_surface));
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.neon_blue));
+
+        snackbar.setAction(R.string.go, view -> {
+            // Cambiar al fragmento de búsqueda
+            if (getActivity() != null) {
+                getActivity().findViewById(R.id.navigation_search).performClick();
+            }
+        });
+
+        snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.neon_pink));
+        snackbar.show();
     }
 
     @Override
