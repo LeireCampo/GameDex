@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
     private static final String BASE_URL = "https://api.rawg.io/api/";
-    private static final String API_KEY = "467052ca912e4040bed8cfc0431c02d9"; // Tu clave API real
+    private static final String API_KEY = "e46e1c67bb2d4a29b302e830880d3baf"; // Tu clave API real
 
     private static Retrofit retrofit = null;
 
