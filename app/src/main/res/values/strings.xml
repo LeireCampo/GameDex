@@ -8,6 +8,29 @@
     <string name="search">Search</string>
     <string name="profile">Profile</string>
 
+    <!-- Authentication -->
+    <string name="login">Iniciar Sesión</string>
+    <string name="register">Registrarse</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="switch_to_register">¿No tienes cuenta? Regístrate</string>
+    <string name="switch_to_login">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="continue_without_account">Continuar sin cuenta</string>
+    <string name="login_successful">Inicio de sesión exitoso</string>
+    <string name="registration_successful">Registro exitoso</string>
+    <string name="registration_successful_profile_error">Registro exitoso, pero hubo un error al crear el perfil</string>
+    <string name="login_required">Debes iniciar sesión para realizar esta acción</string>
+    <string name="guest_user">Usuario Invitado</string>
+
+    <!-- Validation errors -->
+    <string name="error_email_required">El email es obligatorio</string>
+    <string name="error_invalid_email">Email inválido</string>
+    <string name="error_password_required">La contraseña es obligatoria</string>
+    <string name="error_password_too_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_username_required">El nombre de usuario es obligatorio</string>
+    <string name="error_username_too_short">El nombre de usuario debe tener al menos 3 caracteres</string>
+
     <!-- Home Screen -->
     <string name="popular_now">Popular Now</string>
     <string name="recently_released">Recently Released</string>
@@ -33,6 +56,7 @@
     <string name="recent_searches">Recent Searches</string>
     <string name="no_results_found">No results found</string>
     <string name="clear">Clear</string>
+    <string name="try_different_search">Intenta con términos de búsqueda diferentes</string>
 
     <!-- Profile Screen -->
     <string name="edit_profile">Edit Profile</string>
@@ -44,6 +68,9 @@
     <string name="logout">Logout</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="username_placeholder">Username</string>
+    <string name="confirm_logout">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="logged_out">Sesión cerrada correctamente</string>
+    <string name="profile_updated">Perfil actualizado correctamente</string>
 
     <!-- Game Detail Screen -->
     <string name="platform">Platform</string>
@@ -63,217 +90,75 @@
     <string name="description">Description</string>
     <string name="details">Details</string>
     <string name="tags">Tags</string>
+    <string name="trailer">Trailer</string>
+    <string name="screenshots">Screenshots</string>
+    <string name="where_to_buy">Where to Buy</string>
 
     <!-- Common -->
     <string name="game_cover">Game Cover</string>
-
-    <!-- IDs específicos que parecen faltar -->
-    <string name="text_username">Username</string>
-    <string name="text_games_count">Games Count</string>
-    <string name="text_completed_count">Completed Count</string>
-    <string name="recycler_favorite_games">Favorite Games</string>
-    <string name="button_edit_profile">Edit Profile</string>
-    <string name="button_logout">Logout</string>
-
-    <string name="error_searching_games">Error al buscar juegos</string>
-
-
-
-    <string name="add_tag">+ Añadir etiqueta</string>
-
-    <string name="no_tags">Sin etiquetas</string>
-
-    <string name="username">Nombre de usuario</string>
-    <string name="confirm_logout">¿Estás seguro de que quieres cerrar sesión?</string>
-    <string name="logged_out">Sesión cerrada correctamente</string>
-    <string name="profile_updated">Perfil actualizado correctamente</string>
-
-
-    <string name="profile_background">Fondo de perfil</string>
-    <string name="try_different_search">Intenta con términos de búsqueda diferentes</string>
-
-    <string name="use_search_to_add">Usa la búsqueda para encontrar y añadir juegos</string>
-    <string name="go">Ir</string>
-
-
-    <!-- Añade estas cadenas al archivo strings.xml -->
-
-    <string name="added_to_library">Juego añadido a tu biblioteca</string>
-    <string name="removed_from_library">Juego eliminado de tu biblioteca</string>
-    <string name="tag_name">Nombre de la etiqueta</string>
-    <string name="tag_added">Etiqueta añadida correctamente</string>
-    <string name="tag_removed">Etiqueta eliminada correctamente</string>
-    <string name="status_updated">Estado actualizado correctamente</string>
-    <string name="rating_updated">Calificación actualizada</string>
-    <string name="error_loading_game_details">Error al cargar los detalles del juego</string>
-    <string name="no_description_available">No hay descripción disponible</string>
-    <string name="unknown_developer">Desarrollador desconocido</string>
-    <string name="no_internet_connection">Sin conexión a Internet</string>
-    <string name="retry">Reintentar</string>
-    <string name="status">Estado</string>
-    <string name="none">Ninguno</string>
     <string name="not_available">N/A</string>
-    <string name="change_background">Cambiar fondo</string>
-    <string name="select_image_from_gallery">Seleccionar imagen de la galería</string>
-    <string name="permission_required">Permiso requerido</string>
-    <string name="storage_permission_message">Se necesita permiso para acceder a los archivos para seleccionar una imagen</string>
-    <string name="error_loading_image">Error al cargar la imagen</string>
+    <string name="unknown_developer">Unknown Developer</string>
+    <string name="no_description_available">No description available</string>
+    <string name="status">Status</string>
+    <string name="none">None</string>
+    <string name="retry">Retry</string>
+    <string name="close">Close</string>
 
-    <string name="error_loading_games">No se pudieron cargar los juegos</string>
+    <!-- Firebase sync -->
+    <string name="sync_successful">Biblioteca sincronizada correctamente</string>
+    <string name="sync_error">Error al sincronizar biblioteca</string>
+    <string name="offline_mode">Modo offline - Los cambios se sincronizarán al conectarse</string>
 
+    <!-- Stats -->
+    <string name="total_games">Total Games</string>
+    <string name="games_playing">Playing</string>
+    <string name="games_backlog">Backlog</string>
+    <string name="games_wishlist">Wishlist</string>
 
-    <!-- Para la sección de capturas de pantalla -->
-    <string name="screenshots">Capturas de pantalla</string>
-    <string name="game_screenshot">Captura de pantalla del juego</string>
-    <string name="no_screenshots_available">No hay capturas de pantalla disponibles</string>
-    <string name="view_all_screenshots">Ver todas las capturas</string>
+    <!-- Errors -->
+    <string name="error_loading_games">Error loading games</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="error_loading_game_details">Error loading game details</string>
 
-    <!-- Para la sección de videos -->
-    <string name="videos">Videos</string>
-    <string name="game_video">Video del juego</string>
-    <string name="no_videos_available">No hay videos disponibles</string>
-    <string name="play_video">Reproducir video</string>
-    <string name="trailer">Trailer</string>
-    <string name="gameplay">Gameplay</string>
+    <!-- Tags and ratings -->
+    <string name="add_tag">Add Tag</string>
+    <string name="tag_name">Nombre de la etiqueta</string>
+    <string name="no_tags">No tags</string>
+    <string name="tag_added">Tag added successfully</string>
+    <string name="tag_removed">Tag removed successfully</string>
+    <string name="rating_updated">Rating updated</string>
+    <string name="status_updated">Status updated successfully</string>
 
-    <!-- Para la sección de DLCs y expansiones -->
-    <string name="dlcs_and_expansions">DLCs y expansiones</string>
-    <string name="no_dlcs_available">No hay DLCs disponibles</string>
-    <string name="view_all_dlcs">Ver todos los DLCs</string>
-    <string name="dlc">DLC</string>
-    <string name="expansion">Expansión</string>
+    <!-- Store related -->
+    <string name="buy">Buy</string>
+    <string name="store_icon">Store icon</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="watch_trailer">Watch Trailer</string>
+    <string name="play_trailer">Play Trailer</string>
+    <string name="trailer_preview">Trailer Preview</string>
 
-    <!-- Para la sección de juegos de la misma serie -->
-    <string name="game_series">Juegos de la serie</string>
-    <string name="no_series_games_available">No hay otros juegos de la serie</string>
-    <string name="view_all_series">Ver toda la serie</string>
-    <string name="same_series">Misma serie</string>
+    <!-- Additional strings that might be needed -->
+    <string name="ic_add">Add</string>
+    <string name="ic_close">Close</string>
+    <string name="ic_store">Store</string>
+    <string name="ic_play">Play</string>
+    <string name="ic_image">Image</string>
+    <string name="ic_search_empty">Search Empty</string>
+    <string name="ic_empty_library">Empty Library</string>
 
-    <!-- Para la sección de tiendas -->
-    <string name="where_to_buy">Dónde comprar</string>
-    <string name="no_stores_available">No hay tiendas disponibles</string>
-    <string name="visit_store">Visitar tienda</string>
-    <string name="buy_now">Comprar ahora</string>
-    <string name="available_at">Disponible en</string>
+    <!-- Profile related -->
+    <string name="change_background">Change Background</string>
+    <string name="profile_background">Profile Background</string>
 
-    <!-- Para la sección de juegos sugeridos/recomendados -->
-    <string name="suggested_games">Juegos recomendados</string>
-    <string name="similar_games">Juegos similares</string>
-    <string name="no_suggestions_available">No hay recomendaciones disponibles</string>
-    <string name="you_might_like">También te podría gustar</string>
+    <!-- Drawables descriptions -->
+    <string name="bg_rounded_counter">Rounded Counter Background</string>
 
-    <!-- Para los diálogos y mensajes -->
-    <string name="loading_screenshots">Cargando capturas de pantalla…</string>
-    <string name="loading_videos">Cargando videos…</string>
-    <string name="loading_stores">Cargando tiendas…</string>
-    <string name="error_loading_screenshots">Error al cargar las capturas de pantalla</string>
-    <string name="error_loading_videos">Error al cargar los videos</string>
-    <string name="error_loading_stores">Error al cargar las tiendas</string>
-
-
-    <!-- Para la galería de imágenes -->
-    <string name="image_of">Imagen %1$d de %2$d</string>
-    <string name="previous">Anterior</string>
-    <string name="next">Siguiente</string>
-    <string name="close">Cerrar</string>
-    <string name="share">Compartir</string>
-    <string name="download">Descargar</string>
-
-    <!-- Para la búsqueda avanzada -->
-    <string name="advanced_search">Búsqueda avanzada</string>
-    <string name="filter_by_platform">Filtrar por plataforma</string>
-    <string name="filter_by_genre">Filtrar por género</string>
-    <string name="filter_by_year">Filtrar por año</string>
-    <string name="filter_by_rating">Filtrar por valoración</string>
-    <string name="apply_filters">Aplicar filtros</string>
-    <string name="clear_filters">Borrar filtros</string>
-    <string name="sort_by">Ordenar por</string>
-    <string name="sort_name">Nombre</string>
-    <string name="sort_rating">Valoración</string>
-    <string name="sort_released">Fecha de lanzamiento</string>
-    <string name="sort_popularity">Popularidad</string>
-    <string name="ascending">Ascendente</string>
-    <string name="descending">Descendente</string>
-
-    <!-- Para características adicionales -->
-    <string name="metacritic_score">Puntuación Metacritic</string>
-    <string name="esrb_rating">Clasificación ESRB</string>
-    <string name="time_to_beat">Tiempo de juego</string>
-    <string name="main_story">Historia principal</string>
-    <string name="completionist">Al 100%</string>
-    <string name="hours">horas</string>
-    <string name="achievements">Logros</string>
-    <string name="no_achievements">No hay logros disponibles</string>
-    <string name="view_all_achievements">Ver todos los logros</string>
-    <string name="system_requirements">Requisitos del sistema</string>
-    <string name="minimum">Mínimos</string>
-    <string name="recommended">Recomendados</string>
-    <string name="follow_developer">Seguir desarrollador</string>
-    <string name="other_games_by">Otros juegos de %1$s</string>
-
-    <!-- Strings para trailers y videos -->
-
-    <string name="watch_trailer">Ver trailer</string>
-    <string name="play_trailer">Reproducir trailer</string>
-    <string name="trailer_preview">Vista previa del trailer</string>
-    <string name="trailer_not_available">No hay trailer disponible</string>
-    <string name="open_external_player">Abrir en reproductor externo</string>
-
-    <!-- Strings para capturas de pantalla -->
-    <string name="screenshot">Captura de pantalla</string>
-    <string name="view_screenshot">Ver captura de pantalla</string>
-    <string name="no_screenshots">No hay capturas disponibles</string>
-
-    <!-- Strings para tiendas -->
-    <string name="stores">Tiendas</string>
-    <string name="store_icon">Icono de tienda</string>
-    <string name="buy">Comprar</string>
-    <string name="buy_game">Comprar juego</string>
-    <string name="view_in_store">Ver en tienda</string>
-    <string name="best_price">Mejor precio</string>
-
-    <!-- Strings para UI de visualización de imágenes -->
-
-    <string name="image_saved">Imagen guardada en la galería</string>
-    <string name="image_save_failed">Error al guardar la imagen</string>
-
-    <!-- Strings para mensajes y estados -->
-    <string name="loading_trailer">Cargando trailer…</string>
-
-    <string name="error_loading_trailer">Error al cargar el trailer</string>
->
-
-    <!-- Strings para nombres de tiendas comunes (opcional) -->
-    <string name="store_steam">Steam</string>
-    <string name="store_playstation">PlayStation Store</string>
-    <string name="store_xbox">Xbox Store</string>
-    <string name="store_nintendo">Nintendo eShop</string>
-    <string name="store_epic">Epic Games Store</string>
-    <string name="store_gog">GOG.com</string>
-    <string name="store_ubisoft">Ubisoft Connect</string>
-    <string name="store_origin">EA App</string>
-    <string name="store_battlenet">Battle.net</string>
-    <string name="store_amazon">Amazon</string>
-
-    <!-- Strings para colores de tiendas en el código -->
-    <string-array name="store_colors">
-        <item>steam_blue</item>
-        <item>playstation_blue</item>
-        <item>xbox_green</item>
-        <item>nintendo_red</item>
-        <item>epic_purple</item>
-        <item>gog_purple</item>
-        <item>ubisoft_blue</item>
-        <item>origin_orange</item>
-        <item>battlenet_blue</item>
-        <item>amazon_orange</item>
-    </string-array>
-
-    <!-- Strings para describir los juegos en compartir -->
-    <string name="share_game">Compartir juego</string>
-    <string name="share_game_text">¡Mira este juego en GameDex! %1$s\n\nDesarrollador: %2$s\nPuntuación: %3$.1f/5.0</string>
-    <string name="game_added_to_library">%1$s añadido a tu biblioteca</string>
-    <string name="game_removed_from_library">%1$s eliminado de tu biblioteca</string>
-
+    <!-- Missing action strings -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
 
 </resources>

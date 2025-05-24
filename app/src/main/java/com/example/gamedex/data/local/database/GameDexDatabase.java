@@ -2,9 +2,12 @@ package com.example.gamedex.data.local.database;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.gamedex.data.local.dao.GameDao;
 import com.example.gamedex.data.local.dao.TagDao;
@@ -21,7 +24,7 @@ import com.example.gamedex.data.local.entity.User;
                 GameTagCrossRef.class,
                 User.class
         },
-        version = 2, // Incrementamos la versión por los nuevos campos
+        version = 3,
         exportSchema = false
 )
 public abstract class GameDexDatabase extends RoomDatabase {
@@ -32,6 +35,30 @@ public abstract class GameDexDatabase extends RoomDatabase {
 
     private static volatile GameDexDatabase INSTANCE;
 
+    // Migración de versión 2 a 3 (añadir índices)
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Crear índices para Game
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_title` ON `games` (`title`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_isInLibrary` ON `games` (`isInLibrary`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_status` ON `games` (`status`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_lastUpdated` ON `games` (`lastUpdated`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_isInLibrary_status` ON `games` (`isInLibrary`, `status`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_isInLibrary_lastUpdated` ON `games` (`isInLibrary`, `lastUpdated`)");
+
+            // Crear índices para Tag
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_name` ON `tags` (`name`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_isSystemTag` ON `tags` (`isSystemTag`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_createdAt` ON `tags` (`createdAt`)");
+
+            // Crear índices para GameTagCrossRef
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_game_tag_cross_ref_gameId` ON `game_tag_cross_ref` (`gameId`)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_game_tag_cross_ref_tagId` ON `game_tag_cross_ref` (`tagId`)");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_game_tag_cross_ref_gameId_tagId` ON `game_tag_cross_ref` (`gameId`, `tagId`)");
+        }
+    };
+
     public static GameDexDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (GameDexDatabase.class) {
@@ -40,7 +67,8 @@ public abstract class GameDexDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     GameDexDatabase.class,
                                     "gamedex_database")
-                            .fallbackToDestructiveMigration() // Esto reconstruirá la BD si hay cambio de versión
+                            .addMigrations(MIGRATION_2_3) // Usar migración personalizada
+                            .fallbackToDestructiveMigration() // Fallback si falla la migración
                             .build();
                 }
             }

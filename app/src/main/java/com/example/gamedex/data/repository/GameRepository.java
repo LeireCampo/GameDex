@@ -4,8 +4,11 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.gamedex.data.firebase.FirebaseAuthService;
+import com.example.gamedex.data.firebase.FirestoreService;
 import com.example.gamedex.data.local.dao.GameDao;
 import com.example.gamedex.data.local.database.GameDexDatabase;
 import com.example.gamedex.data.local.entity.Game;
@@ -36,29 +39,146 @@ public class GameRepository {
     private final GameDao gameDao;
     private final ExecutorService executorService;
     private final GameApiService apiService;
+    private final FirestoreService firestoreService;
+    private final FirebaseAuthService authService;
 
     public GameRepository(Application application) {
         GameDexDatabase db = GameDexDatabase.getDatabase(application);
         gameDao = db.gameDao();
         executorService = Executors.newSingleThreadExecutor();
         apiService = RetrofitClient.getClient().create(GameApiService.class);
+        firestoreService = FirestoreService.getInstance();
+        authService = FirebaseAuthService.getInstance();
     }
 
-    // Métodos locales existentes
+    // Métodos locales existentes con sincronización Firebase
+
     public LiveData<List<Game>> getAllLibraryGames() {
-        return gameDao.getAllLibraryGames();
+        if (authService.isUserSignedIn()) {
+            // Si el usuario está autenticado, combinar datos locales y de Firebase
+            return getCombinedLibraryGames();
+        } else {
+            // Si no está autenticado, usar solo datos locales
+            return gameDao.getAllLibraryGames();
+        }
+    }
+
+    private LiveData<List<Game>> getCombinedLibraryGames() {
+        MediatorLiveData<List<Game>> mediatorLiveData = new MediatorLiveData<>();
+        LiveData<List<Game>> localGames = gameDao.getAllLibraryGames();
+        LiveData<List<Game>> firebaseGames = firestoreService.getUserGamesFromFirestore();
+
+        mediatorLiveData.addSource(localGames, games -> {
+            // Cuando cambien los datos locales, emitir la lista local
+            mediatorLiveData.setValue(games);
+        });
+
+        mediatorLiveData.addSource(firebaseGames, games -> {
+            // Cuando lleguen datos de Firebase, sincronizar con la base local
+            if (games != null && !games.isEmpty()) {
+                executorService.execute(() -> {
+                    for (Game game : games) {
+                        Game existingGame = gameDao.getGameById(game.getId());
+                        if (existingGame == null || game.getLastUpdated() > existingGame.getLastUpdated()) {
+                            // Si el juego no existe localmente o la versión de Firebase es más reciente
+                            gameDao.insertGame(game);
+                        }
+                    }
+                });
+            }
+        });
+
+        return mediatorLiveData;
     }
 
     public void insertGame(Game game) {
-        executorService.execute(() -> gameDao.insertGame(game));
+        executorService.execute(() -> {
+            gameDao.insertGame(game);
+
+            // Sincronizar con Firebase si el usuario está autenticado
+            if (authService.isUserSignedIn() && game.isInLibrary()) {
+                firestoreService.syncGameToFirestore(game, new FirestoreService.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Log.d(TAG, "Juego sincronizado con Firebase: " + game.getTitle());
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Error al sincronizar juego con Firebase: " + error);
+                    }
+                });
+            }
+        });
     }
 
     public void updateGame(Game game) {
-        executorService.execute(() -> gameDao.updateGame(game));
+        executorService.execute(() -> {
+            game.setLastUpdated(System.currentTimeMillis());
+            gameDao.updateGame(game);
+
+            // Sincronizar con Firebase si el usuario está autenticado
+            if (authService.isUserSignedIn()) {
+                firestoreService.syncGameToFirestore(game, new FirestoreService.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Log.d(TAG, "Juego actualizado en Firebase: " + game.getTitle());
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Error al actualizar juego en Firebase: " + error);
+                    }
+                });
+            }
+        });
     }
 
     public void deleteGame(Game game) {
-        executorService.execute(() -> gameDao.deleteGame(game));
+        executorService.execute(() -> {
+            gameDao.deleteGame(game);
+
+            // Sincronizar eliminación con Firebase si el usuario está autenticado
+            if (authService.isUserSignedIn()) {
+                game.setInLibrary(false); // Marcar como no en biblioteca para que se elimine de Firebase
+                firestoreService.syncGameToFirestore(game, new FirestoreService.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Log.d(TAG, "Juego eliminado de Firebase: " + game.getTitle());
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Error al eliminar juego de Firebase: " + error);
+                    }
+                });
+            }
+        });
+    }
+
+    // Método para sincronizar toda la biblioteca con Firebase
+    public void syncLibraryWithFirebase() {
+        if (!authService.isUserSignedIn()) {
+            Log.w(TAG, "Usuario no autenticado, no se puede sincronizar");
+            return;
+        }
+
+        executorService.execute(() -> {
+            List<Game> localLibraryGames = gameDao.getAllLibraryGamesSync();
+            for (Game game : localLibraryGames) {
+                firestoreService.syncGameToFirestore(game, new FirestoreService.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Log.d(TAG, "Biblioteca sincronizada con Firebase");
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Error al sincronizar biblioteca: " + error);
+                    }
+                });
+            }
+        });
     }
 
     public LiveData<GameWithTags> getGameWithTags(String gameId) {
@@ -81,7 +201,7 @@ public class GameRepository {
         return gameDao.getGamesByStatus(status);
     }
 
-    // Nuevos métodos para la API
+    // Métodos de la API existentes
     public LiveData<List<Game>> getPopularGames() {
         MutableLiveData<List<Game>> games = new MutableLiveData<>();
 

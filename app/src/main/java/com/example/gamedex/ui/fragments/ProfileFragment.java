@@ -1,86 +1,58 @@
 package com.example.gamedex.ui.fragments;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.gamedex.R;
+import com.example.gamedex.data.firebase.FirebaseAuthService;
+import com.example.gamedex.data.firebase.FirestoreService;
 import com.example.gamedex.data.local.entity.Game;
+import com.example.gamedex.ui.activities.AuthActivity;
 import com.example.gamedex.ui.activities.GameDetailActivity;
 import com.example.gamedex.ui.adapters.GameAdapter;
 import com.example.gamedex.ui.viewmodels.LibraryViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProfileFragment extends Fragment implements GameAdapter.OnGameClickListener {
 
     // Variables para vistas
     private TextView usernameTextView;
+    private TextView emailTextView;
     private TextView gamesCountTextView;
     private TextView completedCountTextView;
+    private TextView playingCountTextView;
+    private TextView backlogCountTextView;
+    private TextView wishlistCountTextView;
     private RecyclerView favoriteGamesRecyclerView;
     private Button editProfileButton;
     private Button logoutButton;
-    private ImageView profileBackgroundImageView;
-    private ShapeableImageView profileImageView;
-    private ImageButton changeBackgroundButton;
+    private Button loginButton;
+    private View statsCard;
+    private View favoriteGamesCard;
 
     private GameAdapter favoriteGamesAdapter;
     private LibraryViewModel libraryViewModel;
-
-    // Para manejar los permisos de almacenamiento
-    private static final int PERMISSION_REQUEST_CODE = 100;
-
-    // Para manejar el resultado de seleccionar imagen de la galería
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Inicializar el launcher para seleccionar imagen
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-                        Uri selectedImageUri = result.getData().getData();
-                        if (selectedImageUri != null) {
-                            // Cargar la imagen seleccionada en el fondo
-                            loadBackgroundImage(selectedImageUri);
-                            // Guardar la URI para futuro uso
-                            saveBackgroundImageUri(selectedImageUri.toString());
-                        }
-                    }
-                });
-    }
+    private FirebaseAuthService authService;
+    private FirestoreService firestoreService;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,61 +63,33 @@ public class ProfileFragment extends Fragment implements GameAdapter.OnGameClick
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize views
-        usernameTextView = view.findViewById(R.id.text_username);
-        gamesCountTextView = view.findViewById(R.id.text_games_count);
-        completedCountTextView = view.findViewById(R.id.text_completed_count);
-        favoriteGamesRecyclerView = view.findViewById(R.id.recycler_favorite_games);
-        editProfileButton = view.findViewById(R.id.button_add_to_library);
-        logoutButton = view.findViewById(R.id.button_logout);
-        profileBackgroundImageView = view.findViewById(R.id.image_profile_background);
-        profileImageView = view.findViewById(R.id.image_profile);
-        changeBackgroundButton = view.findViewById(R.id.button_change_background);
-
-        // Cargar nombre de usuario guardado
-        if (getActivity() != null) {
-            String savedUsername = getActivity().getSharedPreferences("profile_prefs",
-                            getActivity().MODE_PRIVATE)
-                    .getString("username", getString(R.string.username_placeholder));
-
-            if (savedUsername != null) {
-                usernameTextView.setText(savedUsername);
-            }
-        }
-
-        setupViewModel();
+        initServices();
+        initViews(view);
         setupRecyclerView();
         setupButtons();
-        loadSavedBackgroundImage();
+        observeAuthState();
+        setupViewModel();
     }
 
-    private void setupViewModel() {
-        libraryViewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
-
-        // Observar todos los juegos de la biblioteca para actualizar estadísticas
-        libraryViewModel.getAllLibraryGames().observe(getViewLifecycleOwner(), games -> {
-            updateStats(games);
-
-            // Filtrar juegos favoritos (los que tienen una valoración de 4 o más)
-            List<Game> favoriteGames = games.stream()
-                    .filter(game -> game.getUserRating() != null && game.getUserRating() >= 4.0f)
-                    .limit(10)
-                    .collect(Collectors.toList());
-
-            favoriteGamesAdapter.updateGames(favoriteGames);
-        });
+    private void initServices() {
+        authService = FirebaseAuthService.getInstance();
+        firestoreService = FirestoreService.getInstance();
     }
 
-    private void updateStats(List<Game> games) {
-        // Actualizar contador de juegos
-        int totalGames = games.size();
-        gamesCountTextView.setText(String.valueOf(totalGames));
-
-        // Contar juegos completados
-        int completedGames = (int) games.stream()
-                .filter(game -> "completed".equals(game.getStatus()))
-                .count();
-        completedCountTextView.setText(String.valueOf(completedGames));
+    private void initViews(View view) {
+        usernameTextView = view.findViewById(R.id.text_username);
+        emailTextView = view.findViewById(R.id.text_email);
+        gamesCountTextView = view.findViewById(R.id.text_games_count);
+        completedCountTextView = view.findViewById(R.id.text_completed_count);
+        playingCountTextView = view.findViewById(R.id.text_playing_count);
+        backlogCountTextView = view.findViewById(R.id.text_backlog_count);
+        wishlistCountTextView = view.findViewById(R.id.text_wishlist_count);
+        favoriteGamesRecyclerView = view.findViewById(R.id.recycler_favorite_games);
+        editProfileButton = view.findViewById(R.id.button_edit_profile);
+        logoutButton = view.findViewById(R.id.button_logout);
+        loginButton = view.findViewById(R.id.button_login);
+        statsCard = view.findViewById(R.id.stats_card);
+        favoriteGamesCard = view.findViewById(R.id.favorite_games_card);
     }
 
     private void setupRecyclerView() {
@@ -156,145 +100,170 @@ public class ProfileFragment extends Fragment implements GameAdapter.OnGameClick
     }
 
     private void setupButtons() {
-        editProfileButton.setOnClickListener(v -> {
-            showEditProfileDialog();
-        });
+        editProfileButton.setOnClickListener(v -> showEditProfileDialog());
 
-        logoutButton.setOnClickListener(v -> {
-            new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.logout)
-                    .setMessage(R.string.confirm_logout)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        // En una app real, implementarías la lógica de cierre de sesión
-                        Snackbar.make(v, R.string.logged_out, Snackbar.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show();
-        });
+        logoutButton.setOnClickListener(v -> showLogoutDialog());
 
-        changeBackgroundButton.setOnClickListener(v -> {
-            // Verificar y solicitar permisos si es necesario
-            if (checkAndRequestPermissions()) {
-                openImagePicker();
-            }
-        });
-
-        profileImageView.setOnClickListener(v -> {
-            // Aquí podrías implementar la selección de imagen de perfil
-            // Similar a la selección de fondo
-            Snackbar.make(v, "Selección de imagen de perfil no implementada", Snackbar.LENGTH_SHORT).show();
-        });
+        loginButton.setOnClickListener(v -> navigateToAuth());
     }
 
-    private boolean checkAndRequestPermissions() {
-        // En Android 13+ se usa un permiso específico para imágenes
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                        PERMISSION_REQUEST_CODE);
-                return false;
-            }
-        }
-        // En versiones anteriores se usa el permiso de almacenamiento
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        PERMISSION_REQUEST_CODE);
-                return false;
-            }
-        }
-        return true;
+    private void observeAuthState() {
+        authService.getCurrentUserLiveData().observe(getViewLifecycleOwner(), this::updateUIForUser);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openImagePicker();
-            } else {
-                new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.permission_required)
-                        .setMessage(R.string.storage_permission_message)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show();
-            }
+    private void setupViewModel() {
+        libraryViewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
+
+        // Observar todos los juegos de la biblioteca para actualizar estadísticas
+        libraryViewModel.getAllLibraryGames().observe(getViewLifecycleOwner(), games -> {
+            updateLocalStats(games);
+
+            // Filtrar juegos favoritos (los que tienen una valoración de 4 o más)
+            List<Game> favoriteGames = games.stream()
+                    .filter(game -> game.getUserRating() != null && game.getUserRating() >= 4.0f)
+                    .limit(10)
+                    .collect(Collectors.toList());
+
+            favoriteGamesAdapter.updateGames(favoriteGames);
+        });
+
+        // Si el usuario está autenticado, observar también las estadísticas de Firebase
+        if (authService.isUserSignedIn()) {
+            observeFirebaseStats();
         }
     }
 
-    private void openImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        imagePickerLauncher.launch(intent);
+    private void observeFirebaseStats() {
+        firestoreService.getUserStats().observe(getViewLifecycleOwner(), this::updateStatsFromFirebase);
     }
 
-    private void loadBackgroundImage(Uri imageUri) {
-        Glide.with(this)
-                .load(imageUri)
-                .centerCrop()
-                .error(R.color.md_theme_primary)
-                .into(profileBackgroundImageView);
-    }
-
-    private void saveBackgroundImageUri(String uriString) {
-        // Guardar en SharedPreferences
-        if (getActivity() != null) {
-            getActivity().getSharedPreferences("profile_prefs", getActivity().MODE_PRIVATE)
-                    .edit()
-                    .putString("background_image_uri", uriString)
-                    .apply();
+    private void updateUIForUser(FirebaseUser user) {
+        if (user != null) {
+            // Usuario autenticado
+            showAuthenticatedUI(user);
+        } else {
+            // Usuario no autenticado
+            showUnauthenticatedUI();
         }
     }
 
-    private void loadSavedBackgroundImage() {
-        if (getActivity() != null) {
-            String savedUriString = getActivity().getSharedPreferences("profile_prefs",
-                            getActivity().MODE_PRIVATE)
-                    .getString("background_image_uri", null);
+    private void showAuthenticatedUI(FirebaseUser user) {
+        // Mostrar información del usuario
+        usernameTextView.setText(user.getDisplayName() != null ? user.getDisplayName() : "Usuario");
+        emailTextView.setText(user.getEmail());
+        emailTextView.setVisibility(View.VISIBLE);
 
-            if (savedUriString != null) {
-                try {
-                    Uri savedUri = Uri.parse(savedUriString);
-                    loadBackgroundImage(savedUri);
-                } catch (Exception e) {
-                    // Si hay algún problema al cargar la imagen guardada
-                    Toast.makeText(getContext(), R.string.error_loading_image, Toast.LENGTH_SHORT).show();
-                }
-            }
+        // Mostrar botones para usuario autenticado
+        editProfileButton.setVisibility(View.VISIBLE);
+        logoutButton.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.GONE);
+
+        // Mostrar estadísticas y juegos favoritos
+        statsCard.setVisibility(View.VISIBLE);
+        favoriteGamesCard.setVisibility(View.VISIBLE);
+
+        // Observar estadísticas de Firebase
+        observeFirebaseStats();
+    }
+
+    private void showUnauthenticatedUI() {
+        // Mostrar información básica
+        usernameTextView.setText(R.string.guest_user);
+        emailTextView.setVisibility(View.GONE);
+
+        // Mostrar botones para usuario no autenticado
+        editProfileButton.setVisibility(View.GONE);
+        logoutButton.setVisibility(View.GONE);
+        loginButton.setVisibility(View.VISIBLE);
+
+        // Mostrar estadísticas locales pero ocultar favoritos si no hay datos
+        statsCard.setVisibility(View.VISIBLE);
+        favoriteGamesCard.setVisibility(View.VISIBLE);
+    }
+
+    private void updateLocalStats(List<Game> games) {
+        // Actualizar contador de juegos
+        int totalGames = games.size();
+        gamesCountTextView.setText(String.valueOf(totalGames));
+
+        // Contar juegos por estado
+        int completedGames = (int) games.stream().filter(game -> "completed".equals(game.getStatus())).count();
+        int playingGames = (int) games.stream().filter(game -> "playing".equals(game.getStatus())).count();
+        int backlogGames = (int) games.stream().filter(game -> "backlog".equals(game.getStatus())).count();
+        int wishlistGames = (int) games.stream().filter(game -> "wishlist".equals(game.getStatus())).count();
+
+        completedCountTextView.setText(String.valueOf(completedGames));
+        if (playingCountTextView != null) playingCountTextView.setText(String.valueOf(playingGames));
+        if (backlogCountTextView != null) backlogCountTextView.setText(String.valueOf(backlogGames));
+        if (wishlistCountTextView != null) wishlistCountTextView.setText(String.valueOf(wishlistGames));
+    }
+
+    private void updateStatsFromFirebase(Map<String, Integer> stats) {
+        if (stats != null) {
+            gamesCountTextView.setText(String.valueOf(stats.getOrDefault("total", 0)));
+            completedCountTextView.setText(String.valueOf(stats.getOrDefault("completed", 0)));
+            if (playingCountTextView != null) playingCountTextView.setText(String.valueOf(stats.getOrDefault("playing", 0)));
+            if (backlogCountTextView != null) backlogCountTextView.setText(String.valueOf(stats.getOrDefault("backlog", 0)));
+            if (wishlistCountTextView != null) wishlistCountTextView.setText(String.valueOf(stats.getOrDefault("wishlist", 0)));
         }
     }
 
     private void showEditProfileDialog() {
+        if (!authService.isUserSignedIn()) {
+            Snackbar.make(getView(), R.string.login_required, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         View view = getLayoutInflater().inflate(R.layout.dialog_edit_profile, null);
-        final com.google.android.material.textfield.TextInputEditText editUsername =
-                view.findViewById(R.id.edit_username);
+        final com.google.android.material.textfield.TextInputEditText editUsername = view.findViewById(R.id.edit_username);
 
         // Establecer username actual
-        editUsername.setText(usernameTextView.getText());
+        String currentUsername = authService.getCurrentUsername();
+        editUsername.setText(currentUsername);
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.edit_profile)
                 .setView(view)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     String newUsername = editUsername.getText().toString().trim();
-                    if (!newUsername.isEmpty()) {
-                        usernameTextView.setText(newUsername);
-
-                        // Guardar en SharedPreferences
-                        if (getActivity() != null) {
-                            getActivity().getSharedPreferences("profile_prefs", getActivity().MODE_PRIVATE)
-                                    .edit()
-                                    .putString("username", newUsername)
-                                    .apply();
-                        }
-
-                        Snackbar.make(getView(), R.string.profile_updated, Snackbar.LENGTH_SHORT).show();
+                    if (!newUsername.isEmpty() && !newUsername.equals(currentUsername)) {
+                        updateUsername(newUsername);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    private void updateUsername(String newUsername) {
+        authService.updateUserProfile(newUsername, new FirebaseAuthService.AuthCallback() {
+            @Override
+            public void onSuccess() {
+                usernameTextView.setText(newUsername);
+                Snackbar.make(getView(), R.string.profile_updated, Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String error) {
+                Snackbar.make(getView(), error, Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showLogoutDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.logout)
+                .setMessage(R.string.confirm_logout)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    authService.signOut();
+                    Snackbar.make(getView(), R.string.logged_out, Snackbar.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void navigateToAuth() {
+        Intent intent = new Intent(requireContext(), AuthActivity.class);
+        startActivity(intent);
     }
 
     @Override

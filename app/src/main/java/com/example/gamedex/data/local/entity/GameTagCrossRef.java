@@ -2,8 +2,17 @@ package com.example.gamedex.data.local.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 
-@Entity(primaryKeys = {"gameId", "tagId"}, tableName = "game_tag_cross_ref")
+@Entity(
+        primaryKeys = {"gameId", "tagId"},
+        tableName = "game_tag_cross_ref",
+        indices = {
+                @Index(value = "gameId"),
+                @Index(value = "tagId"),
+                @Index(value = {"gameId", "tagId"}, unique = true)
+        }
+)
 public class GameTagCrossRef {
     @NonNull
     private String gameId;

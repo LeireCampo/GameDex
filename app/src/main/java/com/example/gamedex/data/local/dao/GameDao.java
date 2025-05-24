@@ -31,6 +31,10 @@ public interface GameDao {
     @Query("SELECT * FROM games WHERE isInLibrary = 1")
     LiveData<List<Game>> getAllLibraryGames();
 
+    // Método síncrono para Firebase
+    @Query("SELECT * FROM games WHERE isInLibrary = 1")
+    List<Game> getAllLibraryGamesSync();
+
     @Query("SELECT * FROM games WHERE title LIKE '%' || :searchQuery || '%'")
     LiveData<List<Game>> searchGames(String searchQuery);
 
@@ -44,4 +48,15 @@ public interface GameDao {
 
     @Query("SELECT * FROM games WHERE status = :status")
     LiveData<List<Game>> getGamesByStatus(String status);
+
+    // Métodos adicionales para sincronización
+    @Query("SELECT * FROM games WHERE isInLibrary = 1 AND lastUpdated > :timestamp")
+    List<Game> getGamesUpdatedAfter(long timestamp);
+
+    @Query("SELECT MAX(lastUpdated) FROM games WHERE isInLibrary = 1")
+    long getLastUpdateTimestamp();
+
+    // Método para obtener juegos que necesitan sincronización
+    @Query("SELECT * FROM games WHERE isInLibrary = 1 AND (lastUpdated > :localTimestamp OR id NOT IN (SELECT id FROM games WHERE isInLibrary = 1))")
+    List<Game> getGamesNeedingSync(long localTimestamp);
 }

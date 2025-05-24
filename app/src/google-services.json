@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "133583477527",
+    "project_id": "gamedex-68f9a",
+    "storage_bucket": "gamedex-68f9a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133583477527:android:66cdd8f5ca1a8562dc3552",
+        "android_client_info": {
+          "package_name": "com.example.gamedex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcv-F_x_pOag4CpHADhXEN2tBYDUow2zU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

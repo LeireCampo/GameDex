@@ -2,9 +2,20 @@ package com.example.gamedex.data.local.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "games")
+@Entity(
+        tableName = "games",
+        indices = {
+                @Index(value = "title"),
+                @Index(value = "isInLibrary"),
+                @Index(value = "status"),
+                @Index(value = "lastUpdated"),
+                @Index(value = {"isInLibrary", "status"}),
+                @Index(value = {"isInLibrary", "lastUpdated"})
+        }
+)
 public class Game {
     @PrimaryKey
     @NonNull
