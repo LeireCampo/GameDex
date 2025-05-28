@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Colores neón principales del logo -->
     <color name="neon_blue">#00FFFF</color>         <!-- Azul cian brillante -->
     <color name="neon_pink">#FF00FF</color>         <!-- Magenta brillante -->
@@ -94,4 +94,6 @@
     <color name="colorPrimary">@color/neon_blue</color>
     <color name="colorPrimaryDark">@color/darker_background</color>
     <color name="colorAccent">@color/neon_pink</color>
+
+
 </resources>

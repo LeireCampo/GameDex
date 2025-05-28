@@ -26,18 +26,19 @@ public class Game {
     private String releaseDate;
     private String publisher;
     private String developer;
-    private String platforms;    // Stored as JSON string
-    private String genres;       // Stored as JSON string
+    private String platforms;        // Stored as JSON string
+    private String genres;           // Stored as JSON string
     private Float userRating;
     private Float globalRating;
     private boolean isInLibrary;
-    private String status;       // "Playing", "Completed", "Wishlist", etc.
+    private String status;           // "Playing", "Completed", "Wishlist", etc.
     private long lastUpdated;
 
-    // Nuevos campos
-    private String trailerUrl;        // URL del video/trailer
-    private String screenshotsUrls;   // JSON de URLs de capturas
-    private String storesInfo;        // JSON con información de tiendas
+    // Nuevos campos para multimedia
+    private String trailerUrl;       // URL del video/trailer
+    private String screenshotsUrls;  // JSON de URLs de capturas
+    private String storesInfo;       // JSON con información de tiendas
+    private String suggestedTags;    // JSON de tags sugeridos de la API
 
     public Game(@NonNull String id, String title) {
         this.id = id;
@@ -45,6 +46,7 @@ public class Game {
         this.lastUpdated = System.currentTimeMillis();
     }
 
+    // Getters y setters existentes
     @NonNull
     public String getId() {
         return id;
@@ -181,5 +183,13 @@ public class Game {
 
     public void setStoresInfo(String storesInfo) {
         this.storesInfo = storesInfo;
+    }
+
+    public String getSuggestedTags() {
+        return suggestedTags;
+    }
+
+    public void setSuggestedTags(String suggestedTags) {
+        this.suggestedTags = suggestedTags;
     }
 }

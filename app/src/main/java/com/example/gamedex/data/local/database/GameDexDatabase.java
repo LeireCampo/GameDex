@@ -24,7 +24,7 @@ import com.example.gamedex.data.local.entity.User;
                 GameTagCrossRef.class,
                 User.class
         },
-        version = 3,
+        version = 4, // Incrementado para la nueva migración
         exportSchema = false
 )
 public abstract class GameDexDatabase extends RoomDatabase {
@@ -59,6 +59,15 @@ public abstract class GameDexDatabase extends RoomDatabase {
         }
     };
 
+    // Migración de versión 3 a 4 (añadir nuevo campo suggestedTags)
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Añadir el nuevo campo suggestedTags a la tabla games
+            database.execSQL("ALTER TABLE games ADD COLUMN suggestedTags TEXT");
+        }
+    };
+
     public static GameDexDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (GameDexDatabase.class) {
@@ -67,7 +76,7 @@ public abstract class GameDexDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     GameDexDatabase.class,
                                     "gamedex_database")
-                            .addMigrations(MIGRATION_2_3) // Usar migración personalizada
+                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4) // Añadir ambas migraciones
                             .fallbackToDestructiveMigration() // Fallback si falla la migración
                             .build();
                 }

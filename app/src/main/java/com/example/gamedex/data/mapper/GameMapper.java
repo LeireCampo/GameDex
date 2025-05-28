@@ -22,14 +22,16 @@ public class GameMapper {
         game.setReleaseDate(response.getReleaseDate());
         game.setGlobalRating(response.getRating());
 
-        // Extraer desarrollador - aquí no tenemos información de desarrollador
-        game.setDeveloper("Desconocido");
+        // Extraer desarrollador
+        game.setDeveloper(response.getDeveloper());
 
         // Convertir plataformas a JSON String
         JSONArray platformsArray = new JSONArray();
         if (response.getPlatforms() != null) {
-            for (GameResponse.PlatformWrapper platform : response.getPlatforms()) {
-                platformsArray.put(platform.getPlatform().getName());
+            for (GameResponse.PlatformWrapper platformWrapper : response.getPlatforms()) {
+                if (platformWrapper.getPlatform() != null) {
+                    platformsArray.put(platformWrapper.getPlatform().getName());
+                }
             }
         }
         game.setPlatforms(platformsArray.toString());
@@ -45,7 +47,6 @@ public class GameMapper {
 
         // Capturar video clip si está disponible
         if (response.getVideoClip() != null) {
-            // Priorizar el video de alta calidad
             String videoUrl = response.getVideoClip().getVideoUrl();
             if (videoUrl == null || videoUrl.isEmpty()) {
                 videoUrl = response.getVideoClip().getClipUrl();
@@ -57,7 +58,7 @@ public class GameMapper {
         if (response.getScreenshots() != null && !response.getScreenshots().isEmpty()) {
             JSONArray screenshotsArray = new JSONArray();
             for (GameResponse.Screenshot screenshot : response.getScreenshots()) {
-                if (!screenshot.isDeleted() && screenshot.getImageUrl() != null) {
+                if (screenshot.getImageUrl() != null) {
                     screenshotsArray.put(screenshot.getImageUrl());
                 }
             }
@@ -75,13 +76,8 @@ public class GameMapper {
                     storeObject.put("name", storeWrapper.getStore().getName());
                     storeObject.put("url", storeWrapper.getUrl());
 
-                    // Intentar capturar información adicional de la tienda
                     if (storeWrapper.getStore().getDomain() != null) {
                         storeObject.put("domain", storeWrapper.getStore().getDomain());
-                    }
-
-                    if (storeWrapper.getStore().getImageBackground() != null) {
-                        storeObject.put("iconUrl", storeWrapper.getStore().getImageBackground());
                     }
 
                     storesArray.put(storeObject);
@@ -98,148 +94,59 @@ public class GameMapper {
     }
 
     public static Game fromDetailResponseToEntity(GameDetailResponse response) {
-        Game game = new Game(String.valueOf(response.getId()), response.getName());
-        game.setDescription(response.getDescription());
-        game.setCoverUrl(response.getBackgroundImage());
-        game.setReleaseDate(response.getReleaseDate());
-        game.setGlobalRating(response.getRating());
+        // Para IGDB, tanto GameDetailResponse como GameResponse tienen estructura similar
+        // Mapeamos los campos básicos que están disponibles
 
-        // Extraer desarrollador (usamos el primero si hay varios)
+        if (response == null) {
+            return new Game("0", "Juego no encontrado");
+        }
+
+        // Crear el juego usando los métodos disponibles en GameDetailResponse
+        Game game = new Game(String.valueOf(response.getId()), response.getName());
+
+        // Mapear campos básicos si existen en GameDetailResponse
+        if (response.getBackgroundImage() != null) {
+            game.setCoverUrl(response.getBackgroundImage());
+        }
+
+        if (response.getReleaseDate() != null) {
+            game.setReleaseDate(response.getReleaseDate());
+        }
+
+        game.setGlobalRating(response.getRating());
+        game.setDescription(response.getDescription());
+
+        // Desarrollador y publisher si están disponibles
         if (response.getDevelopers() != null && !response.getDevelopers().isEmpty()) {
             game.setDeveloper(response.getDevelopers().get(0).getName());
         } else {
             game.setDeveloper("Desconocido");
         }
 
-        // Extraer editor (usamos el primero si hay varios)
         if (response.getPublishers() != null && !response.getPublishers().isEmpty()) {
             game.setPublisher(response.getPublishers().get(0).getName());
         } else {
             game.setPublisher("Desconocido");
         }
 
-        // Convertir plataformas a JSON String
-        JSONArray platformsArray = new JSONArray();
+        // Convertir plataformas a JSON String si están disponibles
         if (response.getPlatforms() != null) {
+            JSONArray platformsArray = new JSONArray();
             for (GameResponse.PlatformWrapper platform : response.getPlatforms()) {
-                platformsArray.put(platform.getPlatform().getName());
+                if (platform.getPlatform() != null) {
+                    platformsArray.put(platform.getPlatform().getName());
+                }
             }
+            game.setPlatforms(platformsArray.toString());
         }
-        game.setPlatforms(platformsArray.toString());
 
-        // Convertir géneros a JSON String
-        JSONArray genresArray = new JSONArray();
+        // Convertir géneros a JSON String si están disponibles
         if (response.getGenres() != null) {
+            JSONArray genresArray = new JSONArray();
             for (GameResponse.Genre genre : response.getGenres()) {
                 genresArray.put(genre.getName());
             }
-        }
-        game.setGenres(genresArray.toString());
-
-        // Manejar trailers/movies (priorizar movies sobre clip)
-        if (response.getMovies() != null && !response.getMovies().isEmpty()) {
-            try {
-                GameDetailResponse.Movie movie = response.getMovies().get(0);
-                if (movie.getData() != null && movie.getData().getMax() != null) {
-                    game.setTrailerUrl(movie.getData().getMax());
-                } else if (movie.getPreviewUrl() != null) {
-                    game.setTrailerUrl(movie.getPreviewUrl());
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error al procesar movie: " + e.getMessage());
-            }
-        } else if (response.getVideoClip() != null) {
-            // Si no hay movies, intentar usar el videoclip
-            String videoUrl = response.getVideoClip().getVideoUrl();
-            if (videoUrl == null || videoUrl.isEmpty()) {
-                videoUrl = response.getVideoClip().getClipUrl();
-            }
-            game.setTrailerUrl(videoUrl);
-        }
-
-        // Manejar capturas de pantalla (preferir las de alta calidad)
-        if (response.getDetailedScreenshots() != null && !response.getDetailedScreenshots().isEmpty()) {
-            JSONArray screenshotsArray = new JSONArray();
-            for (GameResponse.Screenshot screenshot : response.getDetailedScreenshots()) {
-                if (!screenshot.isDeleted() && screenshot.getImageUrl() != null) {
-                    screenshotsArray.put(screenshot.getImageUrl());
-                }
-            }
-            if (screenshotsArray.length() > 0) {
-                game.setScreenshotsUrls(screenshotsArray.toString());
-            }
-        } else if (response.getDetailedScreenshots() == null && response.getVideoClip() != null && response.getVideoClip().getPreviewUrl() != null) {
-            // Si no hay screenshots pero hay preview del video, usar eso como screenshot
-            JSONArray screenshotsArray = new JSONArray();
-            screenshotsArray.put(response.getVideoClip().getPreviewUrl());
-            game.setScreenshotsUrls(screenshotsArray.toString());
-        }
-
-        // Manejar tiendas con información detallada
-        if (response.getStores() != null && !response.getStores().isEmpty()) {
-            JSONArray storesArray = new JSONArray();
-            for (GameResponse.StoreWrapper storeWrapper : response.getStores()) {
-                try {
-                    if (storeWrapper.getStore() != null) {
-                        JSONObject storeObject = new JSONObject();
-                        storeObject.put("name", storeWrapper.getStore().getName());
-
-                        // URL de la tienda
-                        String storeUrl = storeWrapper.getUrl();
-                        if (storeUrl == null || storeUrl.isEmpty()) {
-                            // Construir una URL genérica basada en el dominio si no hay URL específica
-                            if (storeWrapper.getStore().getDomain() != null) {
-                                storeUrl = "https://" + storeWrapper.getStore().getDomain();
-                            }
-                        }
-                        storeObject.put("url", storeUrl);
-
-                        // Información adicional de la tienda
-                        if (storeWrapper.getStore().getDomain() != null) {
-                            storeObject.put("domain", storeWrapper.getStore().getDomain());
-                        }
-
-                        if (storeWrapper.getStore().getImageBackground() != null) {
-                            storeObject.put("iconUrl", storeWrapper.getStore().getImageBackground());
-                        }
-
-                        // Añadir solo si tiene URL válida
-                        if (storeUrl != null && !storeUrl.isEmpty()) {
-                            storesArray.put(storeObject);
-                        }
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "Error al crear JSON de tienda detallada: " + e.getMessage());
-                }
-            }
-            if (storesArray.length() > 0) {
-                game.setStoresInfo(storesArray.toString());
-            }
-        }
-
-        // Información adicional desde Reddit si está disponible
-        if (response.getRedditUrl() != null && !response.getRedditUrl().isEmpty()) {
-            try {
-                JSONObject redditInfo = new JSONObject();
-                redditInfo.put("url", response.getRedditUrl());
-                if (response.getRedditName() != null) {
-                    redditInfo.put("name", response.getRedditName());
-                }
-                if (response.getRedditDescription() != null) {
-                    redditInfo.put("description", response.getRedditDescription());
-                }
-                if (response.getRedditLogo() != null) {
-                    redditInfo.put("logo", response.getRedditLogo());
-                }
-                if (response.getRedditCount() != null) {
-                    redditInfo.put("count", response.getRedditCount());
-                }
-
-                // Podríamos almacenar esta información en un nuevo campo si se necesita
-                // game.setRedditInfo(redditInfo.toString());
-            } catch (JSONException e) {
-                Log.e(TAG, "Error al crear JSON de Reddit: " + e.getMessage());
-            }
+            game.setGenres(genresArray.toString());
         }
 
         return game;
@@ -247,9 +154,38 @@ public class GameMapper {
 
     public static List<Game> fromResponseListToEntityList(List<GameResponse> responses) {
         List<Game> games = new ArrayList<>();
-        for (GameResponse response : responses) {
-            games.add(fromResponseToEntity(response));
+        if (responses != null) {
+            for (GameResponse response : responses) {
+                try {
+                    Game game = fromResponseToEntity(response);
+                    games.add(game);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error mapeando juego: " + e.getMessage());
+                    // Continúa con el siguiente juego en lugar de fallar completamente
+                }
+            }
         }
+        return games;
+    }
+
+    // Método auxiliar para mapear desde respuesta IGDB (que es un array directo)
+    public static List<Game> fromIGDBResponseToEntityList(Object igdbResponse) {
+        List<Game> games = new ArrayList<>();
+
+        try {
+            if (igdbResponse instanceof List) {
+                List<?> responseList = (List<?>) igdbResponse;
+                for (Object item : responseList) {
+                    if (item instanceof GameResponse) {
+                        Game game = fromResponseToEntity((GameResponse) item);
+                        games.add(game);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error mapeando respuesta IGDB: " + e.getMessage());
+        }
+
         return games;
     }
 }

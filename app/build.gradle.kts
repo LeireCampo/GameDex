@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services") // Añadir esta línea
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -36,6 +36,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
     // Room Database
     val roomVersion = "2.6.1"
@@ -46,35 +47,38 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata:2.6.2")
 
+    // ViewPager2 para imágenes fullscreen
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // RecyclerView
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    // CardView
+    implementation("androidx.cardview:cardview:1.0.0")
+
     // Glide para carga de imágenes
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    // Retrofit y Gson
+    // Retrofit para API calls
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-    // Firebase BOM - gestiona todas las versiones de Firebase
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-
-    // Firebase Authentication
     implementation("com.google.firebase:firebase-auth")
-
-    // Cloud Firestore
     implementation("com.google.firebase:firebase-firestore")
-
-    // Firebase Storage (para imágenes de perfil)
-    implementation("com.google.firebase:firebase-storage")
-
-    // Firebase Analytics (opcional)
-    implementation("com.google.firebase:firebase-analytics")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
-    implementation("com.google.firebase:firebase-analytics")
+
+        // Para manejo de JSON más robusto
+        implementation ("com.google.code.gson:gson:2.10.1")
+
+        // Si quieres manejo automático de tokens
+        implementation ("com.squareup.okhttp3:okhttp:4.12.0")
 }

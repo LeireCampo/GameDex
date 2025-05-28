@@ -4,8 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/darker_background">
 
+    <!-- Header con búsqueda -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/search_card"
         android:layout_width="0dp"
@@ -13,30 +15,229 @@
         android:layout_margin="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/neon_blue"
+        android:backgroundTint="@color/dark_surface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/search_input_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:endIconMode="clear_text"
-            app:startIconDrawable="@drawable/ic_search">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/search_edit_text"
+            <!-- Barra de búsqueda principal -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/search_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/search_hint"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                app:endIconMode="clear_text"
+                app:startIconDrawable="@drawable/ic_search"
+                app:boxStrokeColor="@color/neon_blue"
+                app:hintTextColor="@color/neon_blue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_hint"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Botón para mostrar/ocultar filtros -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <Button
+                    android:id="@+id/button_filters"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filters"
+                    android:textColor="@color/neon_pink"
+                    app:strokeColor="@color/neon_pink"
+                    app:icon="@drawable/ic_filter"
+                    app:iconTint="@color/neon_pink" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/button_clear_filters"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/clear_filters"
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Panel de filtros (inicialmente oculto) -->
+            <LinearLayout
+                android:id="@+id/filters_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Filtro por plataforma -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/platform"
+                    android:textColor="@color/neon_blue"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/platform_input_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:boxStrokeColor="@color/neon_blue"
+                    app:hintTextColor="@color/neon_blue">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/platform_dropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/select_platform"
+                        android:inputType="none"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Filtro por género -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genre"
+                    android:textColor="@color/neon_pink"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/genre_input_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:boxStrokeColor="@color/neon_pink"
+                    app:hintTextColor="@color/neon_pink">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/genre_dropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/select_genre"
+                        android:inputType="none"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Filtro por año -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/release_year"
+                    android:textColor="@color/neon_purple"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/year_from_input_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        app:boxStrokeColor="@color/neon_purple"
+                        app:hintTextColor="@color/neon_purple">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/year_from_edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/from_year"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:textColor="@color/white" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/year_to_input_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        app:boxStrokeColor="@color/neon_purple"
+                        app:hintTextColor="@color/neon_purple">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/year_to_edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/to_year"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:textColor="@color/white" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <!-- Botón para aplicar filtros -->
+                <Button
+                    android:id="@+id/button_apply_filters"
+                    style="@style/Widget.GameDex.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/apply_filters"
+                    android:backgroundTint="@color/neon_blue" />
+
+            </LinearLayout>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Chips para filtros activos -->
+    <HorizontalScrollView
+        android:id="@+id/active_filters_scroll"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_card">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/active_filters_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true" />
+    </HorizontalScrollView>
+
+    <!-- Resultados de búsqueda -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_search_results"
         android:layout_width="0dp"
@@ -47,8 +248,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_card" />
+        app:layout_constraintTop_toBottomOf="@+id/active_filters_scroll" />
 
+    <!-- Estado vacío -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/empty_state_card"
         android:layout_width="0dp"
@@ -57,6 +259,9 @@
         android:visibility="gone"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/neon_blue"
+        android:backgroundTint="@color/dark_surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +280,7 @@
                 android:layout_height="80dp"
                 android:src="@drawable/ic_search_empty"
                 android:contentDescription="@string/no_results_found"
-                app:tint="?attr/colorPrimary" />
+                app:tint="@color/neon_blue" />
 
             <TextView
                 android:id="@+id/text_no_results"
@@ -85,6 +290,7 @@
                 android:gravity="center"
                 android:text="@string/no_results_found"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <TextView
@@ -94,15 +300,18 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:text="@string/try_different_search"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/white" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Indicador de carga -->
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:indeterminateTint="@color/neon_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

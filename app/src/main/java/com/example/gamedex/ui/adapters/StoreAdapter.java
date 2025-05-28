@@ -8,12 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.gamedex.R;
 import com.example.gamedex.data.model.Store;
 import com.google.android.material.button.MaterialButton;
@@ -52,54 +54,68 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
         if (store.getIconUrl() != null && !store.getIconUrl().isEmpty()) {
             Glide.with(context)
                     .load(store.getIconUrl())
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .circleCrop()
+                    .placeholder(R.drawable.ic_store)
+                    .error(R.drawable.ic_store)
                     .into(holder.storeIconImageView);
         } else {
             // Icono predeterminado
             holder.storeIconImageView.setImageResource(R.drawable.ic_store);
         }
 
-        // Establecer colores según la tienda (esto es opcional, puedes personalizarlo)
+        // Establecer colores según la tienda
         int storeColor = getColorForStore(store.getName().toLowerCase());
         holder.storeIconImageView.setColorFilter(ContextCompat.getColor(context, storeColor));
 
         // Configurar botón de compra
         holder.buyButton.setOnClickListener(v -> {
             if (store.getUrl() != null && !store.getUrl().isEmpty()) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(store.getUrl()));
-                context.startActivity(intent);
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(store.getUrl()));
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(context, "No se pudo abrir la tienda", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(context, "URL de tienda no disponible", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // También hacer clickeable toda la tarjeta
+        holder.itemView.setOnClickListener(v -> holder.buyButton.performClick());
     }
 
     private int getColorForStore(String storeName) {
         // Asignar colores según la tienda
-        switch (storeName) {
-            case "steam":
-                return R.color.steam_blue;
-            case "playstation store":
-            case "ps store":
-                return R.color.playstation_blue;
-            case "xbox store":
-            case "microsoft store":
-                return R.color.xbox_green;
-            case "nintendo eshop":
-            case "nintendo":
-                return R.color.nintendo_red;
-            case "epic games":
-            case "epic games store":
-                return R.color.epic_purple;
-            case "gog":
-            case "gog.com":
-                return R.color.gog_purple;
-            default:
-                return R.color.neon_blue;
+        if (storeName.contains("steam")) {
+            return R.color.steam_blue;
+        } else if (storeName.contains("playstation") || storeName.contains("ps store")) {
+            return R.color.playstation_blue;
+        } else if (storeName.contains("xbox") || storeName.contains("microsoft")) {
+            return R.color.xbox_green;
+        } else if (storeName.contains("nintendo")) {
+            return R.color.nintendo_red;
+        } else if (storeName.contains("epic")) {
+            return R.color.epic_purple;
+        } else if (storeName.contains("gog")) {
+            return R.color.gog_purple;
+        } else if (storeName.contains("ubisoft")) {
+            return R.color.ubisoft_blue;
+        } else if (storeName.contains("origin")) {
+            return R.color.origin_orange;
+        } else if (storeName.contains("battle") || storeName.contains("blizzard")) {
+            return R.color.battlenet_blue;
+        } else if (storeName.contains("amazon")) {
+            return R.color.amazon_orange;
+        } else {
+            return R.color.neon_blue;
         }
     }
 
     @Override
     public int getItemCount() {
-        return stores.size();
+        return stores != null ? stores.size() : 0;
     }
 
     static class StoreViewHolder extends RecyclerView.ViewHolder {

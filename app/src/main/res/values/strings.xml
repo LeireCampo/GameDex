@@ -161,4 +161,17 @@
     <string name="share">Share</string>
     <string name="copy">Copy</string>
 
+    <!-- Search filters -->
+    <string name="filters">Filtros</string>
+    <string name="hide_filters">Ocultar filtros</string>
+    <string name="clear_filters">Limpiar filtros</string>
+    <string name="apply_filters">Aplicar filtros</string>
+    <string name="select_platform">Seleccionar plataforma</string>
+    <string name="select_genre">Seleccionar género</string>
+    <string name="release_year">Año de lanzamiento</string>
+    <string name="from_year">Desde</string>
+    <string name="to_year">Hasta</string>
+    <string name="year">Año</string>
+    <string name="invalid_year">Año inválido</string>
+
 </resources>
