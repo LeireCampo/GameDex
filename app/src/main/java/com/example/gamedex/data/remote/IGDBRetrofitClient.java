@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
 public class IGDBRetrofitClient {
     private static final String BASE_URL = "https://api.igdb.com/v4/";
 
-    // Credenciales IGDB - Necesitas registrarte en https://api.igdb.com/
+    // ⚠️ REEMPLAZA ESTOS VALORES CON TUS CREDENCIALES REALES
     private static final String CLIENT_ID = "h3j6x53uw34cezxih565ngti2zwq9y";
-    private static final String ACCESS_TOKEN = "EL_ACCESS_TOKEN_QUE_RECIBAS";
+    private static final String ACCESS_TOKEN = "14gcths9owwzd21o6hq20vfy1d9eai";
 
     private static Retrofit retrofit = null;
 
@@ -41,7 +41,6 @@ public class IGDBRetrofitClient {
         return retrofit;
     }
 
-    // Interceptor para añadir headers de autenticación automáticamente
     private static class IGDBAuthInterceptor implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -50,7 +49,8 @@ public class IGDBRetrofitClient {
             Request.Builder requestBuilder = originalRequest.newBuilder()
                     .header("Client-ID", CLIENT_ID)
                     .header("Authorization", "Bearer " + ACCESS_TOKEN)
-                    .header("Accept", "application/json");
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "text/plain");
 
             Request request = requestBuilder.build();
             return chain.proceed(request);

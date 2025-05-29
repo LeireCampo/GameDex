@@ -28,10 +28,8 @@ public class HomeViewModel extends AndroidViewModel {
 
         popularGames = gameRepository.getPopularGames();
         recentGames = gameRepository.getRecentGames();
-
-        // Para recomendados podríamos usar otra llamada API o filtrar localmente
-        // Por ahora usamos los populares como recomendados
-        recommendedGames = popularGames;
+        // Para recomendados usamos próximos lanzamientos
+        recommendedGames = gameRepository.getUpcomingGames();
     }
 
     public LiveData<List<Game>> getPopularGames() {

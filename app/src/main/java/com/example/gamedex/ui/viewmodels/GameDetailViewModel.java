@@ -25,10 +25,7 @@ public class GameDetailViewModel extends ViewModel {
     private LiveData<Game> gameDetails;
     private LiveData<List<ScreenshotListResponse.Screenshot>> screenshots;
     private LiveData<List<VideoListResponse.Video>> videos;
-    private LiveData<List<Game>> dlcs;
-    private LiveData<List<Game>> seriesGames;
     private LiveData<List<StoreListResponse.GameStore>> stores;
-    private LiveData<List<Game>> suggestedGames;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private String gameId;
 
@@ -41,17 +38,16 @@ public class GameDetailViewModel extends ViewModel {
         this.gameRepository = new GameRepository(application);
         this.tagRepository = new TagRepository(application);
 
-        // Cargar datos básicos
+        // Cargar datos básicos del juego local
         this.gameWithTags = gameRepository.getGameWithTags(gameId);
+
+        // Cargar detalles actualizados de la API
         this.gameDetails = gameRepository.getGameDetailsOnline(gameId);
 
-        // Cargar datos adicionales
+        // Cargar datos multimedia de la API
         this.screenshots = gameRepository.getGameScreenshots(gameId);
         this.videos = gameRepository.getGameVideos(gameId);
-        this.dlcs = gameRepository.getGameDlcs(gameId);
-        this.seriesGames = gameRepository.getGameSeries(gameId);
         this.stores = gameRepository.getGameStores(gameId);
-        this.suggestedGames = gameRepository.getSuggestedGames(gameId);
     }
 
     public LiveData<GameWithTags> getGameWithTags() {
@@ -70,20 +66,8 @@ public class GameDetailViewModel extends ViewModel {
         return videos;
     }
 
-    public LiveData<List<Game>> getDlcs() {
-        return dlcs;
-    }
-
-    public LiveData<List<Game>> getSeriesGames() {
-        return seriesGames;
-    }
-
     public LiveData<List<StoreListResponse.GameStore>> getStores() {
         return stores;
-    }
-
-    public LiveData<List<Game>> getSuggestedGames() {
-        return suggestedGames;
     }
 
     public void toggleInLibrary() {
