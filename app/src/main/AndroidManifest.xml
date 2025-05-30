@@ -2,15 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permisos necesarios -->
+    <!-- Permisos necesarios para RAWG API -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
-        android:name=".GameDexApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,31 +15,35 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GameDex"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- Actividad de autenticación como launcher -->
         <activity
-            android:name=".ui.activities.AuthActivity"
-            android:exported="true"
-            android:theme="@style/Theme.GameDex">
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Actividad principal -->
+        <!-- Actividad de autenticación -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activities.AuthActivity"
             android:exported="false"
-            android:theme="@style/Theme.GameDex" />
+            android:theme="@style/SplashTheme" />
 
         <!-- Actividad de detalles del juego -->
         <activity
             android:name=".ui.activities.GameDetailActivity"
             android:exported="false"
-            android:theme="@style/Theme.GameDex"
             android:parentActivityName=".MainActivity" />
+
+        <!-- Actividad de splash -->
+        <activity
+            android:name=".ui.activities.SplashActivity"
+            android:exported="false"
+            android:theme="@style/SplashTheme" />
 
     </application>
 

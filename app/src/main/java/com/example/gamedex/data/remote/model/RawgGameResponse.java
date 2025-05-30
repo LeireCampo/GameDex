@@ -1,10 +1,9 @@
 package com.example.gamedex.data.remote.model;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
-public class GameResponse {
+public class RawgGameResponse {
     @SerializedName("id")
     private int id;
 
@@ -15,13 +14,16 @@ public class GameResponse {
     private String name;
 
     @SerializedName("released")
-    private String releaseDate;
+    private String released;
 
     @SerializedName("background_image")
     private String backgroundImage;
 
     @SerializedName("rating")
     private float rating;
+
+    @SerializedName("rating_top")
+    private int ratingTop;
 
     @SerializedName("ratings_count")
     private int ratingsCount;
@@ -33,36 +35,33 @@ public class GameResponse {
     private int playtime;
 
     @SerializedName("platforms")
-    private List<PlatformWrapper> platforms;
+    private List<PlatformInfo> platforms;
 
     @SerializedName("genres")
     private List<Genre> genres;
 
     @SerializedName("stores")
-    private List<StoreWrapper> stores;
+    private List<StoreInfo> stores;
 
     @SerializedName("tags")
     private List<Tag> tags;
 
-    @SerializedName("clip")
-    private VideoClip videoClip;
+    @SerializedName("esrb_rating")
+    private EsrbRating esrbRating;
 
-    @SerializedName("short_screenshots")
-    private List<Screenshot> screenshots;
-
-    // Campos adicionales para desarrollador y publisher
-    @SerializedName("developers")
-    private List<Developer> developers;
-
-    @SerializedName("publishers")
-    private List<Publisher> publishers;
-
-    public static class PlatformWrapper {
+    public static class PlatformInfo {
         @SerializedName("platform")
         private Platform platform;
 
+        @SerializedName("released_at")
+        private String releasedAt;
+
         public Platform getPlatform() {
             return platform;
+        }
+
+        public String getReleasedAt() {
+            return releasedAt;
         }
     }
 
@@ -112,19 +111,19 @@ public class GameResponse {
         }
     }
 
-    public static class StoreWrapper {
+    public static class StoreInfo {
+        @SerializedName("id")
+        private int id;
+
         @SerializedName("store")
         private Store store;
 
-        @SerializedName("url")
-        private String url;
+        public int getId() {
+            return id;
+        }
 
         public Store getStore() {
             return store;
-        }
-
-        public String getUrl() {
-            return url;
         }
     }
 
@@ -141,9 +140,6 @@ public class GameResponse {
         @SerializedName("domain")
         private String domain;
 
-        @SerializedName("image_background")
-        private String imageBackground;
-
         public int getId() {
             return id;
         }
@@ -158,10 +154,6 @@ public class GameResponse {
 
         public String getDomain() {
             return domain;
-        }
-
-        public String getImageBackground() {
-            return imageBackground;
         }
     }
 
@@ -188,75 +180,7 @@ public class GameResponse {
         }
     }
 
-    public static class VideoClip {
-        @SerializedName("clip")
-        private String clipUrl;
-
-        @SerializedName("preview")
-        private String previewUrl;
-
-        @SerializedName("video")
-        private String videoUrl;
-
-        @SerializedName("video_480")
-        private String video480Url;
-
-        public String getClipUrl() {
-            return clipUrl;
-        }
-
-        public String getPreviewUrl() {
-            return previewUrl;
-        }
-
-        public String getVideoUrl() {
-            return videoUrl;
-        }
-
-        public String getVideo480Url() {
-            return video480Url;
-        }
-    }
-
-    public static class Screenshot {
-        @SerializedName("id")
-        private int id;
-
-        @SerializedName("image")
-        private String imageUrl;
-
-        @SerializedName("width")
-        private int width;
-
-        @SerializedName("height")
-        private int height;
-
-        @SerializedName("is_deleted")
-        private boolean isDeleted;
-
-        public int getId() {
-            return id;
-        }
-
-        public String getImageUrl() {
-            return imageUrl;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public boolean isDeleted() {
-            return isDeleted;
-        }
-    }
-
-    // Nuevas clases para Developer y Publisher
-    public static class Developer {
+    public static class EsrbRating {
         @SerializedName("id")
         private int id;
 
@@ -279,30 +203,7 @@ public class GameResponse {
         }
     }
 
-    public static class Publisher {
-        @SerializedName("id")
-        private int id;
-
-        @SerializedName("name")
-        private String name;
-
-        @SerializedName("slug")
-        private String slug;
-
-        public int getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getSlug() {
-            return slug;
-        }
-    }
-
-    // Getters básicos
+    // Getters principales
     public int getId() {
         return id;
     }
@@ -315,8 +216,8 @@ public class GameResponse {
         return name;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
+    public String getReleased() {
+        return released;
     }
 
     public String getBackgroundImage() {
@@ -325,6 +226,10 @@ public class GameResponse {
 
     public float getRating() {
         return rating;
+    }
+
+    public int getRatingTop() {
+        return ratingTop;
     }
 
     public int getRatingsCount() {
@@ -339,7 +244,7 @@ public class GameResponse {
         return playtime;
     }
 
-    public List<PlatformWrapper> getPlatforms() {
+    public List<PlatformInfo> getPlatforms() {
         return platforms;
     }
 
@@ -347,7 +252,7 @@ public class GameResponse {
         return genres;
     }
 
-    public List<StoreWrapper> getStores() {
+    public List<StoreInfo> getStores() {
         return stores;
     }
 
@@ -355,34 +260,19 @@ public class GameResponse {
         return tags;
     }
 
-    public VideoClip getVideoClip() {
-        return videoClip;
+    public EsrbRating getEsrbRating() {
+        return esrbRating;
     }
 
-    public List<Screenshot> getScreenshots() {
-        return screenshots;
-    }
-
-    public List<Developer> getDevelopers() {
-        return developers;
-    }
-
-    public List<Publisher> getPublishers() {
-        return publishers;
-    }
-
-    // MÉTODOS AGREGADOS para obtener desarrollador y publisher
+    // Métodos auxiliares
     public String getDeveloper() {
-        if (developers != null && !developers.isEmpty()) {
-            return developers.get(0).getName();
-        }
+        // RAWG no siempre incluye desarrollador en la respuesta básica
+        // Necesitarías hacer una llamada adicional a getGameDetails
         return "Desconocido";
     }
 
     public String getPublisher() {
-        if (publishers != null && !publishers.isEmpty()) {
-            return publishers.get(0).getName();
-        }
+        // Similar al desarrollador
         return "Desconocido";
     }
 }

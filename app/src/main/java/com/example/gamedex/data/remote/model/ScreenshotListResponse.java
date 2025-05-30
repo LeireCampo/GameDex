@@ -1,7 +1,6 @@
 package com.example.gamedex.data.remote.model;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 public class ScreenshotListResponse {
@@ -24,6 +23,9 @@ public class ScreenshotListResponse {
         @SerializedName("image")
         private String imageUrl;
 
+        @SerializedName("url")
+        private String url;
+
         @SerializedName("width")
         private int width;
 
@@ -33,40 +35,21 @@ public class ScreenshotListResponse {
         @SerializedName("is_deleted")
         private boolean isDeleted;
 
-        public int getId() {
-            return id;
-        }
-
+        public int getId() { return id; }
         public String getImageUrl() {
-            return imageUrl;
+            // Para IGDB, usar el campo url y añadir https:
+            if (url != null && !url.startsWith("http")) {
+                return "https:" + url.replace("t_thumb", "t_screenshot_big");
+            }
+            return imageUrl != null ? imageUrl : url;
         }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public boolean isDeleted() {
-            return isDeleted;
-        }
+        public int getWidth() { return width; }
+        public int getHeight() { return height; }
+        public boolean isDeleted() { return isDeleted; }
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public String getNext() {
-        return next;
-    }
-
-    public String getPrevious() {
-        return previous;
-    }
-
-    public List<Screenshot> getResults() {
-        return results;
-    }
+    public int getCount() { return count; }
+    public String getNext() { return next; }
+    public String getPrevious() { return previous; }
+    public List<Screenshot> getResults() { return results; }
 }

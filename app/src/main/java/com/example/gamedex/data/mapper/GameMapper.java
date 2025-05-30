@@ -22,8 +22,11 @@ public class GameMapper {
         game.setReleaseDate(response.getReleaseDate());
         game.setGlobalRating(response.getRating());
 
-        // Extraer desarrollador
+        // CORRECCIÓN: Usar el método getDeveloper() que ya existe en GameResponse
         game.setDeveloper(response.getDeveloper());
+
+        // También establecer el publisher si está disponible
+        game.setPublisher(response.getPublisher());
 
         // Convertir plataformas a JSON String
         JSONArray platformsArray = new JSONArray();
@@ -94,17 +97,12 @@ public class GameMapper {
     }
 
     public static Game fromDetailResponseToEntity(GameDetailResponse response) {
-        // Para IGDB, tanto GameDetailResponse como GameResponse tienen estructura similar
-        // Mapeamos los campos básicos que están disponibles
-
         if (response == null) {
             return new Game("0", "Juego no encontrado");
         }
 
-        // Crear el juego usando los métodos disponibles en GameDetailResponse
         Game game = new Game(String.valueOf(response.getId()), response.getName());
 
-        // Mapear campos básicos si existen en GameDetailResponse
         if (response.getBackgroundImage() != null) {
             game.setCoverUrl(response.getBackgroundImage());
         }
@@ -116,7 +114,7 @@ public class GameMapper {
         game.setGlobalRating(response.getRating());
         game.setDescription(response.getDescription());
 
-        // Desarrollador y publisher si están disponibles
+        // Desarrollador y publisher
         if (response.getDevelopers() != null && !response.getDevelopers().isEmpty()) {
             game.setDeveloper(response.getDevelopers().get(0).getName());
         } else {
@@ -129,7 +127,7 @@ public class GameMapper {
             game.setPublisher("Desconocido");
         }
 
-        // Convertir plataformas a JSON String si están disponibles
+        // Convertir plataformas a JSON String
         if (response.getPlatforms() != null) {
             JSONArray platformsArray = new JSONArray();
             for (GameResponse.PlatformWrapper platform : response.getPlatforms()) {
@@ -140,7 +138,7 @@ public class GameMapper {
             game.setPlatforms(platformsArray.toString());
         }
 
-        // Convertir géneros a JSON String si están disponibles
+        // Convertir géneros a JSON String
         if (response.getGenres() != null) {
             JSONArray genresArray = new JSONArray();
             for (GameResponse.Genre genre : response.getGenres()) {
@@ -168,7 +166,7 @@ public class GameMapper {
         return games;
     }
 
-    // Método auxiliar para mapear desde respuesta IGDB (que es un array directo)
+    // Método auxiliar para mapear desde respuesta IGDB
     public static List<Game> fromIGDBResponseToEntityList(Object igdbResponse) {
         List<Game> games = new ArrayList<>();
 
