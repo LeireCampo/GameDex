@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darker_background"
+    android:background="@color/background_black"
     tools:context=".ui.activities.GameDetailActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -60,9 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                android:textColor="@color/neon_blue"
+                android:textColor="@color/primary_green"
                 android:textStyle="bold"
-                android:shadowColor="@color/neon_blue_glow"
                 android:shadowDx="0"
                 android:shadowDy="0"
                 android:shadowRadius="8"
@@ -85,7 +84,7 @@
                 android:text="@string/trailer"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textStyle="bold"
-                android:textColor="@color/neon_pink" />
+                android:textColor="@color/accent_orange" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_trailer"
@@ -95,8 +94,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/neon_pink"
-                android:backgroundTint="@color/dark_surface">
+                app:strokeColor="@color/accent_orange"
+                android:backgroundTint="@color/card_background">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -123,18 +122,17 @@
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/play_trailer"
                         android:src="@drawable/ic_play"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
 
                     <Button
                         android:id="@+id/button_watch_trailer"
-                        style="@style/Widget.GameDex.Button.Neon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
                         android:layout_marginBottom="16dp"
                         android:text="@string/watch_trailer"
-                        android:backgroundTint="@color/neon_pink"
-                        android:textColor="@color/darker_background" />
+                        android:backgroundTint="@color/accent_orange"
+                        android:textColor="@color/background_black" />
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -146,7 +144,7 @@
                 android:text="@string/screenshots"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textStyle="bold"
-                android:textColor="@color/neon_blue" />
+                android:textColor="@color/primary_green" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_screenshots"
@@ -200,7 +198,7 @@
                 android:text="@string/your_rating"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textStyle="bold"
-                android:textColor="@color/neon_purple" />
+                android:textColor="@color/accent_blue" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -222,7 +220,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                    android:textColor="@color/neon_purple"
+                    android:textColor="@color/accent_blue"
                     android:textStyle="bold"
                     tools:text="4.5" />
             </LinearLayout>
@@ -233,7 +231,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:background="@color/dark_surface" />
+                android:background="@color/card_background" />
 
             <!-- Sección de tiendas -->
             <TextView
@@ -257,7 +255,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:background="@color/dark_surface" />
+                android:background="@color/card_background" />
 
             <!-- Sección de detalles -->
             <TextView
@@ -266,7 +264,7 @@
                 android:text="@string/details"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textStyle="bold"
-                android:textColor="@color/neon_blue" />
+                android:textColor="@color/primary_green" />
 
             <TableLayout
                 android:layout_width="match_parent"
@@ -386,7 +384,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:background="@color/dark_surface" />
+                android:background="@color/card_background" />
 
             <!-- Sección de descripción -->
             <TextView
@@ -395,7 +393,7 @@
                 android:text="@string/description"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textStyle="bold"
-                android:textColor="@color/neon_blue" />
+                android:textColor="@color/primary_green" />
 
             <TextView
                 android:id="@+id/text_description"
@@ -415,7 +413,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminateTint="@color/neon_blue"
+        android:indeterminateTint="@color/primary_green"
         android:visibility="gone" />
 
     <!-- Diálogo de imagen completa -->

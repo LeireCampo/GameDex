@@ -1,211 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
+    <!-- Tema principal con estilo moderno dark/green -->
     <style name="Base.Theme.GameDex" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Colores primarios -->
-        <item name="colorPrimary">@color/md_theme_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorOnPrimary">@color/background_black</item>
+        <item name="colorPrimaryContainer">@color/surface_dark</item>
+        <item name="colorOnPrimaryContainer">@color/primary_green</item>
+
+        <!-- Colores de superficie -->
+        <item name="android:colorBackground">@color/background_black</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorSurface">@color/card_background</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_dark</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
 
         <!-- Colores secundarios -->
-        <item name="colorSecondary">@color/md_theme_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorSecondary">@color/accent_blue</item>
+        <item name="colorOnSecondary">@color/text_primary</item>
 
-        <!-- Otros colores -->
-        <item name="colorTertiary">@color/md_theme_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
-
-        <item name="android:colorBackground">@color/md_theme_background</item>
-        <item name="colorOnBackground">@color/md_theme_onBackground</item>
-        <item name="colorSurface">@color/md_theme_surface</item>
-        <item name="colorOnSurface">@color/md_theme_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
-
-        <!-- Estilos de texto -->
-        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.GameDex.HeadlineLarge</item>
-        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.GameDex.HeadlineMedium</item>
-        <item name="textAppearanceBodyLarge">@style/TextAppearance.GameDex.BodyLarge</item>
-
-        <!-- Shapes -->
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.GameDex.SmallComponent</item>
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.GameDex.MediumComponent</item>
-        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.GameDex.LargeComponent</item>
+        <!-- Configuración de ventana -->
+        <item name="android:statusBarColor">@color/background_black</item>
+        <item name="android:navigationBarColor">@color/background_black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <style name="Theme.GameDex" parent="Base.Theme.GameDex" />
 
+    <!-- Estilo para cards modernas -->
+    <style name="Widget.GameDex.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/card_background</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/border_color</item>
+    </style>
+
+    <!-- Estilo para botones principales -->
+    <style name="Widget.GameDex.Button" parent="Widget.Material3.Button">
+        <item name="android:textColor">@color/background_black</item>
+        <item name="backgroundTint">@color/primary_green</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.025</item>
+    </style>
+
+    <!-- Estilo para botones outlined -->
+    <style name="Widget.GameDex.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/primary_green</item>
+        <item name="strokeColor">@color/primary_green</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Estilo para FAB -->
+    <style name="Widget.GameDex.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/primary_green</item>
+        <item name="tint">@color/background_black</item>
+        <item name="elevation">8dp</item>
+    </style>
+
+    <!-- Estilo para TextInputLayout -->
+    <style name="Widget.GameDex.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/primary_green</item>
+        <item name="hintTextColor">@color/text_hint</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+    <!-- Estilo para Bottom Navigation -->
+    <style name="Widget.GameDex.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/background_dark</item>
+        <item name="itemIconTint">@color/bottom_nav_color</item>
+        <item name="itemTextColor">@color/bottom_nav_color</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- Estilo para Chips -->
+    <style name="Widget.GameDex.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/card_background</item>
+        <item name="chipStrokeColor">@color/primary_green</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="chipCornerRadius">20dp</item>
+    </style>
+
+    <!-- Tipografía moderna -->
+    <style name="TextAppearance.GameDex.Headline" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <style name="TextAppearance.GameDex.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.GameDex.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
     <!-- Tema para SplashActivity -->
     <style name="SplashTheme" parent="Theme.GameDex">
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@color/darker_background</item>
+        <item name="android:windowBackground">@color/background_black</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/background_black</item>
+        <item name="android:navigationBarColor">@color/background_black</item>
     </style>
 
-    <!-- Estilos para tipografía -->
-    <style name="TextAppearance.GameDex.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">28sp</item>
-        <item name="android:shadowColor">#80000000</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">4</item>
-    </style>
-
-    <style name="TextAppearance.GameDex.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:shadowColor">#66000000</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:shadowRadius">3</item>
-    </style>
-
-    <style name="TextAppearance.GameDex.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <!-- Estilos para formas redondeadas con brillo neón -->
+    <!-- Estilos adicionales que podrían estar siendo referenciados -->
     <style name="ShapeAppearance.GameDex.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">12dp</item>
+        <item name="cornerSize">8dp</item>
     </style>
 
     <style name="ShapeAppearance.GameDex.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">12dp</item>
     </style>
 
     <style name="ShapeAppearance.GameDex.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">20dp</item>
+        <item name="cornerSize">16dp</item>
     </style>
 
-    <!-- Estilos para perfil circular -->
+    <!-- Estilo para RatingBar -->
+    <style name="RatingBarGame" parent="Widget.AppCompat.RatingBar">
+        <item name="colorControlActivated">@color/primary_green</item>
+    </style>
+
+    <style name="RatingBarMini" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="colorControlActivated">@color/primary_green</item>
+    </style>
+
+    <!-- Estilos para imagen de perfil circular -->
     <style name="ShapeAppearance.GameDex.CircleProfile" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
 
-    <!-- Estilos para rating bars -->
-    <style name="RatingBarMini" parent="Widget.AppCompat.RatingBar.Small">
-        <item name="colorControlActivated">@color/neon_blue</item>
-    </style>
-
-    <style name="RatingBarGame" parent="Widget.AppCompat.RatingBar">
-        <item name="colorControlActivated">@color/neon_blue</item>
-    </style>
-
-    <!-- Estilos para títulos en app bar -->
-    <style name="CollapsedAppBarTitle" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:shadowColor">#80000000</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:shadowRadius">2</item>
-    </style>
-
-    <style name="ExpandedAppBarTitle" parent="TextAppearance.Material3.HeadlineLarge">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">32sp</item>
-        <item name="android:shadowColor">#80000000</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">4</item>
-    </style>
-
-    <!-- Estilos para botones con brillo neón -->
-    <style name="Widget.GameDex.Button" parent="Widget.Material3.Button">
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
-        <item name="cornerRadius">24dp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="backgroundTint">@color/neon_blue</item>
-        <item name="android:shadowColor">#80000000</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">4</item>
-    </style>
-
-    <style name="Widget.GameDex.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
-        <item name="cornerRadius">24dp</item>
-        <item name="strokeWidth">2dp</item>
-        <item name="strokeColor">@color/neon_pink</item>
-        <item name="android:textColor">@color/neon_pink</item>
-    </style>
-
-    <!-- Estilo para botones con brillo neón -->
-    <style name="Widget.GameDex.Button.Neon" parent="Widget.Material3.Button">
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
-        <item name="cornerRadius">24dp</item>
-        <item name="android:textColor">@color/darker_background</item>
-        <item name="backgroundTint">@color/neon_blue</item>
-        <item name="android:shadowColor">#80000000</item>
-        <item name="android:shadowDx">0</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">4</item>
-        <item name="android:elevation">4dp</item>
-    </style>
-
-    <!-- Estilos para chips neón -->
-    <style name="Widget.GameDex.Chip.Neon" parent="Widget.Material3.Chip.Filter">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="chipStrokeWidth">1dp</item>
-        <item name="chipStrokeColor">@color/neon_blue</item>
-        <item name="chipBackgroundColor">@color/dark_surface</item>
-        <item name="rippleColor">@color/neon_blue</item>
-        <item name="android:elevation">2dp</item>
-        <item name="chipSurfaceColor">@color/dark_surface</item>
-    </style>
-
-    <style name="Widget.GameDex.Chip.Neon.Playing" parent="Widget.GameDex.Chip.Neon">
-        <item name="chipStrokeColor">@color/status_playing</item>
-        <item name="chipIconTint">@color/status_playing</item>
-    </style>
-
-    <style name="Widget.GameDex.Chip.Neon.Completed" parent="Widget.GameDex.Chip.Neon">
-        <item name="chipStrokeColor">@color/status_completed</item>
-        <item name="chipIconTint">@color/status_completed</item>
-    </style>
-
-    <style name="Widget.GameDex.Chip.Neon.Backlog" parent="Widget.GameDex.Chip.Neon">
-        <item name="chipStrokeColor">@color/status_backlog</item>
-        <item name="chipIconTint">@color/status_backlog</item>
-    </style>
-
-    <style name="Widget.GameDex.Chip.Neon.Wishlist" parent="Widget.GameDex.Chip.Neon">
-        <item name="chipStrokeColor">@color/status_wishlist</item>
-        <item name="chipIconTint">@color/status_wishlist</item>
-    </style>
-
-
-    <!-- Alert dialog -->
-
-    <style name="AlertDialog.Neon" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="android:background">@color/dark_surface</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textColorPrimary">@color/neon_blue</item>
-        <item name="colorAccent">@color/neon_pink</item>
-        <item name="buttonBarPositiveButtonStyle">@style/AlertDialog.Neon.Button</item>
-        <item name="buttonBarNegativeButtonStyle">@style/AlertDialog.Neon.Button</item>
-    </style>
-
-    <style name="AlertDialog.Neon.Button" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/neon_blue</item>
-        <item name="rippleColor">@color/neon_blue_transparent</item>
-    </style>
 </resources>

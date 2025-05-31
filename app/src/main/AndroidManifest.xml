@@ -22,6 +22,16 @@
 
         >
 
+        <activity
+            android:name=".ui.activities.SplashActivity"
+            android:exported="true"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <!-- Actividad principal -->
         <activity
             android:name=".MainActivity"
@@ -44,11 +54,6 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 
-        <!-- Actividad de splash (si la tienes) -->
-        <activity
-            android:name=".ui.activities.SplashActivity"
-            android:exported="false"
-            android:theme="@style/SplashTheme" />
 
     </application>
 
