@@ -3,43 +3,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.GameDex.Card"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="160dp"
+    android:layout_height="240dp"
     android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@color/primary_green"
+    android:backgroundTint="@color/card_background"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- Imagen del juego -->
+        <!-- Imagen del juego - más grande y prominente -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image_game_cover"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
             android:scaleType="centerCrop"
             android:contentDescription="@string/game_cover"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.GameDex.SmallComponent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:src="@tools:sample/backgrounds/scenic" />
 
-        <!-- Contenido del texto -->
+        <!-- Contenido de texto -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/image_game_cover"
-            app:layout_constraintEnd_toStartOf="@+id/rating_container"
-            app:layout_constraintStart_toEndOf="@+id/image_game_cover"
-            app:layout_constraintTop_toTopOf="@+id/image_game_cover">
+            android:padding="12dp">
 
             <!-- Título del juego -->
             <TextView
@@ -47,76 +43,86 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:textAppearance="@style/TextAppearance.GameDex.Title"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                tools:text="Hollow Knight" />
+                android:textColor="@color/primary_green"
+                android:shadowColor="@color/primary_green"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="4"
+                tools:text="The Witcher 3: Wild Hunt" />
 
             <!-- Desarrollador -->
             <TextView
                 android:id="@+id/text_game_developer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.GameDex.Body"
-                android:textSize="14sp"
-                tools:text="Team Cherry" />
-
-            <!-- Plataformas -->
-            <TextView
-                android:id="@+id/text_game_platforms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/primary_green"
+                android:textAppearance="@style/TextAppearance.GameDex.Body"
                 android:textSize="12sp"
-                android:textStyle="normal"
-                tools:text="PC, PS4, Xbox One" />
+                android:textColor="@color/white"
+                tools:text="CD Projekt RED" />
+
+            <!-- Rating container en la parte inferior -->
+            <LinearLayout
+                android:id="@+id/rating_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="bottom|center_horizontal"
+                android:orientation="horizontal">
+
+                <!-- Rating bar mini -->
+                <RatingBar
+                    android:id="@+id/rating_bar_mini"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:progressTint="@color/primary_green"
+                    android:rating="4.5"
+                    android:stepSize="0.5"
+                    tools:rating="4.5" />
+
+                <!-- Rating number -->
+                <TextView
+                    android:id="@+id/text_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_green"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="4.8" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Rating container -->
-        <LinearLayout
-            android:id="@+id/rating_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/image_game_cover"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/image_game_cover">
+    </LinearLayout>
 
-            <!-- Rating number -->
-            <TextView
-                android:id="@+id/text_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary_green"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                tools:text="9.1" />
-
-            <!-- Rating bar mini -->
-            <RatingBar
-                android:id="@+id/rating_bar_mini"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:progressTint="@color/primary_green"
-                android:rating="4.5"
-                android:stepSize="0.5"
-                tools:rating="4.5" />
-
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Plataformas como chips pequeños en la esquina superior -->
+    <TextView
+        android:id="@+id/text_game_platforms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_rounded_counter"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="PC"
+        tools:visibility="visible" />
 
 </com.google.android.material.card.MaterialCardView>

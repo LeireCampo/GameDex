@@ -114,31 +114,33 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
                 "wishlist"
         };
 
-        int[] chipStyles = {
-                R.style.Widget_GameDex_Chip_Neon,
-                R.style.Widget_GameDex_Chip_Neon_Playing,
-                R.style.Widget_GameDex_Chip_Neon_Completed,
-                R.style.Widget_GameDex_Chip_Neon_Backlog,
-                R.style.Widget_GameDex_Chip_Neon_Wishlist
-        };
-
+        // CORRECCIÓN: Usar estilos que existen en lugar de los no definidos
         for (int i = 0; i < filters.length; i++) {
             final String filter = filterValues[i];
-            Chip chip = new Chip(requireContext(), null, chipStyles[i]);
+
+            // Crear chip con estilo básico y personalizar según el filtro
+            Chip chip = new Chip(requireContext());
             chip.setText(filters[i]);
             chip.setCheckable(true);
             chip.setClickable(true);
             chip.setTag(filter);
 
-            // Añadir efecto neón al seleccionar
+            // Personalizar el chip según el tipo de filtro
+            customizeChipByStatus(chip, filter);
+
+            // Añadir efecto de selección
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
-                    // Aumentar el efecto neón cuando está seleccionado
-                    chip.setShadowLayer(8, 0, 0, ContextCompat.getColor(requireContext(),
-                            getColorForStatus(filter)));
+                    // Aumentar el efecto cuando está seleccionado
+                    chip.setChipBackgroundColor(ContextCompat.getColorStateList(requireContext(),
+                            getBackgroundColorForStatus(filter)));
+                    chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
                 } else {
-                    // Quitar el efecto de sombra cuando no está seleccionado
-                    chip.setShadowLayer(0, 0, 0, 0);
+                    // Estado normal
+                    chip.setChipBackgroundColor(ContextCompat.getColorStateList(requireContext(),
+                            R.color.card_background));
+                    chip.setTextColor(ContextCompat.getColor(requireContext(),
+                            getColorForStatus(filter)));
                 }
             });
 
@@ -161,6 +163,22 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
         });
     }
 
+    private void customizeChipByStatus(Chip chip, String status) {
+        // Establecer colores del borde según el estado
+        chip.setChipStrokeColor(ContextCompat.getColorStateList(requireContext(),
+                getColorForStatus(status)));
+        chip.setChipStrokeWidth(2);
+        chip.setChipCornerRadius(20);
+
+        // Color de fondo inicial
+        chip.setChipBackgroundColor(ContextCompat.getColorStateList(requireContext(),
+                R.color.card_background));
+
+        // Color del texto
+        chip.setTextColor(ContextCompat.getColor(requireContext(),
+                getColorForStatus(status)));
+    }
+
     private int getColorForStatus(String status) {
         switch (status) {
             case "playing":
@@ -172,7 +190,22 @@ public class LibraryFragment extends Fragment implements GameAdapter.OnGameClick
             case "wishlist":
                 return R.color.status_wishlist;
             default:
-                return R.color.neon_blue;
+                return R.color.primary_green;
+        }
+    }
+
+    private int getBackgroundColorForStatus(String status) {
+        switch (status) {
+            case "playing":
+                return R.color.status_playing_transparent;
+            case "completed":
+                return R.color.status_completed_transparent;
+            case "backlog":
+                return R.color.status_backlog_transparent;
+            case "wishlist":
+                return R.color.status_wishlist_transparent;
+            default:
+                return R.color.primary_green;
         }
     }
 

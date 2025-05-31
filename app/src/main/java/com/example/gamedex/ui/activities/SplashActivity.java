@@ -195,7 +195,8 @@ public class SplashActivity extends AppCompatActivity {
         exitAnimSet.playTogether(fadeOut, scaleDownX, scaleDownY);
         exitAnimSet.setDuration(400);
 
-        exitAnimSet.setAnimatorListener(new android.animation.AnimatorListenerAdapter() {
+        // CORRECCIÓN: Usar addListener en lugar de setAnimatorListener
+        exitAnimSet.addListener(new android.animation.AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(android.animation.Animator animation) {
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);

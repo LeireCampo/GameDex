@@ -184,4 +184,8 @@
         <color name="mask_blue">#1A00FFFF</color>
         <color name="mask_pink">#1AFF00FF</color>
 
+        <color name="semi_transparent">#80000000</color>
+
+
+
 </resources>
