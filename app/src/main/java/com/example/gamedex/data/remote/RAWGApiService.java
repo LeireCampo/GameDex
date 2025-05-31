@@ -159,4 +159,6 @@ public interface RAWGApiService {
             @Query("page") Integer page,
             @Query("page_size") Integer pageSize
     );
+    // Añadir esta clase interna al final de RAWGApiService.java
+
 }

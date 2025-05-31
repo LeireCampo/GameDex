@@ -2,22 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permisos necesarios para RAWG API -->
+    <!-- Permisos necesarios -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
+        android:name=".GameDexApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        tools:targetApi="31"
         android:theme="@style/Theme.GameDex"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="31">
 
+        >
+
+        <!-- Actividad principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -39,7 +44,7 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 
-        <!-- Actividad de splash -->
+        <!-- Actividad de splash (si la tienes) -->
         <activity
             android:name=".ui.activities.SplashActivity"
             android:exported="false"

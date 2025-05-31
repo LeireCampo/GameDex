@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.bottom_navigation);
         setupBottomNavigation();
+        // En onCreate() o donde inicialices tu repository
 
         // Set default fragment
         if (savedInstanceState == null) {

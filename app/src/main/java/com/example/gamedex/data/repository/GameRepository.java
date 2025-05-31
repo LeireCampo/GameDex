@@ -16,13 +16,19 @@ import com.example.gamedex.data.mapper.GameMapper;
 import com.example.gamedex.data.model.GameWithTags;
 import com.example.gamedex.data.remote.RAWGApiService;
 import com.example.gamedex.data.remote.RAWGRetrofitClient;
+import com.example.gamedex.data.remote.model.GameDetailResponse;
+import com.example.gamedex.data.remote.model.GameListResponse;
 import com.example.gamedex.data.remote.model.GameResponse;
 import com.example.gamedex.data.remote.model.ScreenshotListResponse;
 import com.example.gamedex.data.remote.model.StoreListResponse;
 import com.example.gamedex.data.remote.model.VideoListResponse;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -195,7 +201,7 @@ public class GameRepository {
         return gameDao.getGamesByStatus(status);
     }
 
-    // === MÉTODOS API IGDB ===
+    // === MÉTODOS API RAWG ===
 
     public LiveData<List<Game>> getPopularGames() {
         MutableLiveData<List<Game>> games = new MutableLiveData<>();
@@ -207,27 +213,27 @@ public class GameRepository {
                 return games;
             }
 
-            String query = RAWGApiService.RAWGQueryBuilder.getPopularGamesQuery(20, 0);
+            // Usar directamente el método del servicio RAWG
+            apiService.getPopularGames("-rating", 20, "80,100")
+                    .enqueue(new Callback<GameListResponse>() {
+                        @Override
+                        public void onResponse(Call<GameListResponse> call, Response<GameListResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body().getResults());
+                                games.setValue(gamesList);
+                                Log.d(TAG, "Juegos populares cargados: " + gamesList.size());
+                            } else {
+                                games.setValue(new ArrayList<>());
+                                Log.e(TAG, "Error en respuesta RAWG: " + response.code());
+                            }
+                        }
 
-            apiService.getGames(query).enqueue(new Callback<List<GameResponse>>() {
-                @Override
-                public void onResponse(Call<List<GameResponse>> call, Response<List<GameResponse>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body());
-                        games.setValue(gamesList);
-                        Log.d(TAG, "Juegos populares cargados: " + gamesList.size());
-                    } else {
-                        games.setValue(new ArrayList<>());
-                        Log.e(TAG, "Error en respuesta IGDB: " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<GameResponse>> call, Throwable t) {
-                    games.setValue(new ArrayList<>());
-                    Log.e(TAG, "Error en llamada IGDB: " + t.getMessage());
-                }
-            });
+                        @Override
+                        public void onFailure(Call<GameListResponse> call, Throwable t) {
+                            games.setValue(new ArrayList<>());
+                            Log.e(TAG, "Error en llamada RAWG: " + t.getMessage());
+                        }
+                    });
         } catch (Exception e) {
             Log.e(TAG, "Error en getPopularGames: " + e.getMessage());
             games.setValue(new ArrayList<>());
@@ -246,27 +252,33 @@ public class GameRepository {
                 return games;
             }
 
-            String query = RAWGApiService.RAWGQueryBuilder.getRecentGamesQuery(20, 0);
+            // Calcular fechas para juegos recientes (últimos 3 meses)
+            Calendar cal = Calendar.getInstance();
+            String endDate = formatDate(cal.getTime());
+            cal.add(Calendar.MONTH, -3);
+            String startDate = formatDate(cal.getTime());
+            String dateRange = startDate + "," + endDate;
 
-            apiService.getGames(query).enqueue(new Callback<List<GameResponse>>() {
-                @Override
-                public void onResponse(Call<List<GameResponse>> call, Response<List<GameResponse>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body());
-                        games.setValue(gamesList);
-                        Log.d(TAG, "Juegos recientes cargados: " + gamesList.size());
-                    } else {
-                        games.setValue(new ArrayList<>());
-                        Log.e(TAG, "Error en respuesta IGDB: " + response.code());
-                    }
-                }
+            apiService.getRecentGames("-released", 20, dateRange)
+                    .enqueue(new Callback<GameListResponse>() {
+                        @Override
+                        public void onResponse(Call<GameListResponse> call, Response<GameListResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body().getResults());
+                                games.setValue(gamesList);
+                                Log.d(TAG, "Juegos recientes cargados: " + gamesList.size());
+                            } else {
+                                games.setValue(new ArrayList<>());
+                                Log.e(TAG, "Error en respuesta RAWG: " + response.code());
+                            }
+                        }
 
-                @Override
-                public void onFailure(Call<List<GameResponse>> call, Throwable t) {
-                    games.setValue(new ArrayList<>());
-                    Log.e(TAG, "Error en llamada IGDB: " + t.getMessage());
-                }
-            });
+                        @Override
+                        public void onFailure(Call<GameListResponse> call, Throwable t) {
+                            games.setValue(new ArrayList<>());
+                            Log.e(TAG, "Error en llamada RAWG: " + t.getMessage());
+                        }
+                    });
         } catch (Exception e) {
             Log.e(TAG, "Error en getRecentGames: " + e.getMessage());
             games.setValue(new ArrayList<>());
@@ -285,27 +297,33 @@ public class GameRepository {
                 return games;
             }
 
-            String query = GameApiService.IGDBQueryBuilder.getUpcomingGamesQuery(15, 0);
+            // Calcular fechas para próximos lanzamientos (próximos 6 meses)
+            Calendar cal = Calendar.getInstance();
+            String startDate = formatDate(cal.getTime());
+            cal.add(Calendar.MONTH, 6);
+            String endDate = formatDate(cal.getTime());
+            String dateRange = startDate + "," + endDate;
 
-            apiService.getGames(query).enqueue(new Callback<List<GameResponse>>() {
-                @Override
-                public void onResponse(Call<List<GameResponse>> call, Response<List<GameResponse>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body());
-                        games.setValue(gamesList);
-                        Log.d(TAG, "Próximos lanzamientos cargados: " + gamesList.size());
-                    } else {
-                        games.setValue(new ArrayList<>());
-                        Log.e(TAG, "Error cargando próximos lanzamientos: " + response.code());
-                    }
-                }
+            apiService.getUpcomingGames("released", 15, dateRange)
+                    .enqueue(new Callback<GameListResponse>() {
+                        @Override
+                        public void onResponse(Call<GameListResponse> call, Response<GameListResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body().getResults());
+                                games.setValue(gamesList);
+                                Log.d(TAG, "Próximos lanzamientos cargados: " + gamesList.size());
+                            } else {
+                                games.setValue(new ArrayList<>());
+                                Log.e(TAG, "Error cargando próximos lanzamientos: " + response.code());
+                            }
+                        }
 
-                @Override
-                public void onFailure(Call<List<GameResponse>> call, Throwable t) {
-                    games.setValue(new ArrayList<>());
-                    Log.e(TAG, "Error en próximos lanzamientos: " + t.getMessage());
-                }
-            });
+                        @Override
+                        public void onFailure(Call<GameListResponse> call, Throwable t) {
+                            games.setValue(new ArrayList<>());
+                            Log.e(TAG, "Error en próximos lanzamientos: " + t.getMessage());
+                        }
+                    });
         } catch (Exception e) {
             Log.e(TAG, "Error en getUpcomingGames: " + e.getMessage());
             games.setValue(new ArrayList<>());
@@ -326,14 +344,12 @@ public class GameRepository {
                 return gameData;
             }
 
-            String query = GameApiService.IGDBQueryBuilder.getGameDetailsQuery(gameId);
-
-            apiService.getGameDetails(query).enqueue(new Callback<List<GameResponse>>() {
+            apiService.getGameDetails(gameId).enqueue(new Callback<GameDetailResponse>() {
                 @Override
-                public void onResponse(Call<List<GameResponse>> call, Response<List<GameResponse>> response) {
-                    if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                        GameResponse gameResponse = response.body().get(0);
-                        Game gameEntity = GameMapper.fromResponseToEntity(gameResponse);
+                public void onResponse(Call<GameDetailResponse> call, Response<GameDetailResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        GameDetailResponse gameResponse = response.body();
+                        Game gameEntity = GameMapper.fromDetailResponseToEntity(gameResponse);
                         gameData.setValue(gameEntity);
 
                         // Guardar en base de datos local
@@ -353,9 +369,9 @@ public class GameRepository {
                 }
 
                 @Override
-                public void onFailure(Call<List<GameResponse>> call, Throwable t) {
+                public void onFailure(Call<GameDetailResponse> call, Throwable t) {
                     gameData.setValue(null);
-                    Log.e(TAG, "Error en llamada IGDB para detalles: " + t.getMessage());
+                    Log.e(TAG, "Error en llamada RAWG para detalles: " + t.getMessage());
                 }
             });
         } catch (Exception e) {
@@ -368,19 +384,80 @@ public class GameRepository {
 
     public LiveData<List<ScreenshotListResponse.Screenshot>> getGameScreenshots(String gameId) {
         MutableLiveData<List<ScreenshotListResponse.Screenshot>> screenshots = new MutableLiveData<>();
-        screenshots.setValue(new ArrayList<>());
+
+        try {
+            if (apiService == null) {
+                screenshots.setValue(new ArrayList<>());
+                return screenshots;
+            }
+
+            apiService.getGameScreenshots(gameId, 1, 10)
+                    .enqueue(new Callback<ScreenshotListResponse>() {
+                        @Override
+                        public void onResponse(Call<ScreenshotListResponse> call, Response<ScreenshotListResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                screenshots.setValue(response.body().getResults());
+                                Log.d(TAG, "Screenshots cargadas: " + response.body().getResults().size());
+                            } else {
+                                screenshots.setValue(new ArrayList<>());
+                                Log.e(TAG, "Error cargando screenshots: " + response.code());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ScreenshotListResponse> call, Throwable t) {
+                            screenshots.setValue(new ArrayList<>());
+                            Log.e(TAG, "Error en screenshots: " + t.getMessage());
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "Error en getGameScreenshots: " + e.getMessage());
+            screenshots.setValue(new ArrayList<>());
+        }
+
         return screenshots;
     }
 
     public LiveData<List<VideoListResponse.Video>> getGameVideos(String gameId) {
         MutableLiveData<List<VideoListResponse.Video>> videos = new MutableLiveData<>();
+        // RAWG no tiene endpoint de videos, devolver lista vacía
         videos.setValue(new ArrayList<>());
         return videos;
     }
 
     public LiveData<List<StoreListResponse.GameStore>> getGameStores(String gameId) {
         MutableLiveData<List<StoreListResponse.GameStore>> stores = new MutableLiveData<>();
-        stores.setValue(new ArrayList<>());
+
+        try {
+            if (apiService == null) {
+                stores.setValue(new ArrayList<>());
+                return stores;
+            }
+
+            apiService.getGameStores(gameId, 1, 10)
+                    .enqueue(new Callback<StoreListResponse>() {
+                        @Override
+                        public void onResponse(Call<StoreListResponse> call, Response<StoreListResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                stores.setValue(response.body().getResults());
+                                Log.d(TAG, "Tiendas cargadas: " + response.body().getResults().size());
+                            } else {
+                                stores.setValue(new ArrayList<>());
+                                Log.e(TAG, "Error cargando tiendas: " + response.code());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<StoreListResponse> call, Throwable t) {
+                            stores.setValue(new ArrayList<>());
+                            Log.e(TAG, "Error en tiendas: " + t.getMessage());
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "Error en getGameStores: " + e.getMessage());
+            stores.setValue(new ArrayList<>());
+        }
+
         return stores;
     }
 
@@ -394,27 +471,26 @@ public class GameRepository {
                 return searchResults;
             }
 
-            String query = GameApiService.IGDBQueryBuilder.getSearchGamesQuery(searchQuery, 20, 0);
+            apiService.searchGames(searchQuery, 1, 20)
+                    .enqueue(new Callback<GameListResponse>() {
+                        @Override
+                        public void onResponse(Call<GameListResponse> call, Response<GameListResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body().getResults());
+                                searchResults.setValue(gamesList);
+                                Log.d(TAG, "Búsqueda completada: " + gamesList.size() + " juegos encontrados");
+                            } else {
+                                searchResults.setValue(new ArrayList<>());
+                                Log.e(TAG, "Error en búsqueda RAWG: " + response.code());
+                            }
+                        }
 
-            apiService.searchGames(query).enqueue(new Callback<List<GameResponse>>() {
-                @Override
-                public void onResponse(Call<List<GameResponse>> call, Response<List<GameResponse>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body());
-                        searchResults.setValue(gamesList);
-                        Log.d(TAG, "Búsqueda completada: " + gamesList.size() + " juegos encontrados");
-                    } else {
-                        searchResults.setValue(new ArrayList<>());
-                        Log.e(TAG, "Error en búsqueda IGDB: " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<GameResponse>> call, Throwable t) {
-                    searchResults.setValue(new ArrayList<>());
-                    Log.e(TAG, "Error en búsqueda IGDB: " + t.getMessage());
-                }
-            });
+                        @Override
+                        public void onFailure(Call<GameListResponse> call, Throwable t) {
+                            searchResults.setValue(new ArrayList<>());
+                            Log.e(TAG, "Error en búsqueda RAWG: " + t.getMessage());
+                        }
+                    });
         } catch (Exception e) {
             Log.e(TAG, "Error en searchGamesOnline: " + e.getMessage());
             searchResults.setValue(new ArrayList<>());
@@ -430,6 +506,10 @@ public class GameRepository {
         defaultPlatforms.add("PlayStation 5");
         defaultPlatforms.add("Xbox Series X");
         defaultPlatforms.add("Nintendo Switch");
+        defaultPlatforms.add("PlayStation 4");
+        defaultPlatforms.add("Xbox One");
+        defaultPlatforms.add("iOS");
+        defaultPlatforms.add("Android");
         platforms.setValue(defaultPlatforms);
         return platforms;
     }
@@ -442,14 +522,72 @@ public class GameRepository {
         defaultGenres.add("RPG");
         defaultGenres.add("Strategy");
         defaultGenres.add("Sports");
+        defaultGenres.add("Racing");
+        defaultGenres.add("Shooter");
+        defaultGenres.add("Simulation");
+        defaultGenres.add("Puzzle");
+        defaultGenres.add("Fighting");
         genres.setValue(defaultGenres);
         return genres;
     }
 
     public LiveData<List<Game>> searchGamesWithFilters(String searchQuery, String platform,
                                                        String genre, String yearFrom, String yearTo) {
-        // Por ahora, usar búsqueda básica
-        return searchGamesOnline(searchQuery);
+        MutableLiveData<List<Game>> searchResults = new MutableLiveData<>();
+
+        try {
+            if (apiService == null) {
+                searchResults.setValue(new ArrayList<>());
+                return searchResults;
+            }
+
+            // Convertir plataforma a ID de RAWG
+            String platformIds = getPlatformId(platform);
+            // Convertir género a ID de RAWG
+            String genreIds = getGenreId(genre);
+
+            // Construir rango de fechas
+            String dateRange = null;
+            if (yearFrom != null && !yearFrom.isEmpty() || yearTo != null && !yearTo.isEmpty()) {
+                String fromDate = (yearFrom != null && !yearFrom.isEmpty()) ? yearFrom + "-01-01" : "1970-01-01";
+                String toDate = (yearTo != null && !yearTo.isEmpty()) ? yearTo + "-12-31" : "2030-12-31";
+                dateRange = fromDate + "," + toDate;
+            }
+
+            apiService.searchGamesAdvanced(
+                    searchQuery,
+                    platformIds,
+                    genreIds,
+                    dateRange,
+                    null, // metacritic
+                    "-rating",
+                    1,
+                    20
+            ).enqueue(new Callback<GameListResponse>() {
+                @Override
+                public void onResponse(Call<GameListResponse> call, Response<GameListResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Game> gamesList = GameMapper.fromResponseListToEntityList(response.body().getResults());
+                        searchResults.setValue(gamesList);
+                        Log.d(TAG, "Búsqueda con filtros completada: " + gamesList.size() + " juegos encontrados");
+                    } else {
+                        searchResults.setValue(new ArrayList<>());
+                        Log.e(TAG, "Error en búsqueda con filtros: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GameListResponse> call, Throwable t) {
+                    searchResults.setValue(new ArrayList<>());
+                    Log.e(TAG, "Error en búsqueda con filtros: " + t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error en searchGamesWithFilters: " + e.getMessage());
+            searchResults.setValue(new ArrayList<>());
+        }
+
+        return searchResults;
     }
 
     public void syncLibraryWithFirebase() {
@@ -468,5 +606,52 @@ public class GameRepository {
                 Log.e(TAG, "Error sincronizando biblioteca: " + e.getMessage());
             }
         });
+    }
+
+    // === MÉTODOS AUXILIARES ===
+
+    private String formatDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return sdf.format(date);
+    }
+
+    // Mapeo básico de plataformas a IDs de RAWG
+    private String getPlatformId(String platformName) {
+        if (platformName == null || platformName.isEmpty()) {
+            return null;
+        }
+
+        switch (platformName.toLowerCase()) {
+            case "pc": return "4";
+            case "playstation 5": return "187";
+            case "xbox series x": return "186";
+            case "nintendo switch": return "7";
+            case "playstation 4": return "18";
+            case "xbox one": return "1";
+            case "ios": return "3";
+            case "android": return "21";
+            default: return null;
+        }
+    }
+
+    // Mapeo básico de géneros a IDs de RAWG
+    private String getGenreId(String genreName) {
+        if (genreName == null || genreName.isEmpty()) {
+            return null;
+        }
+
+        switch (genreName.toLowerCase()) {
+            case "action": return "4";
+            case "adventure": return "3";
+            case "rpg": return "5";
+            case "strategy": return "10";
+            case "sports": return "15";
+            case "racing": return "1";
+            case "shooter": return "2";
+            case "simulation": return "14";
+            case "puzzle": return "7";
+            case "fighting": return "6";
+            default: return null;
+        }
     }
 }

@@ -11,7 +11,7 @@ package com.example.gamedex.data.remote;
 public class RAWGConfig {
 
     // ⚠️ REEMPLAZA ESTE VALOR CON TU API KEY REAL
-    public static final String API_KEY = "e46e1c67bb2d4a29b302e830880d3baf";
+    public static final String API_KEY = "11a6e52cecb24e11874a3dff4e4bff81";
 
     // URLs base
     public static final String BASE_URL = "https://api.rawg.io/api/";
