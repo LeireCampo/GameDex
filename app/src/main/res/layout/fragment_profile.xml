@@ -329,6 +329,75 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tags_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/accent_orange"
+        android:backgroundTint="@color/dark_surface"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_tag"
+                    android:layout_marginEnd="8dp"
+                    app:tint="@color/accent_orange"
+                    android:contentDescription="Tags icon" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Mis Etiquetas"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="@color/accent_orange"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_total_tags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rounded_counter"
+                    android:paddingStart="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="2dp"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    tools:text="5" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_user_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_tag" />
+
+        </LinearLayout>
+
         <!-- Espacio adicional al final -->
         <View
             android:layout_width="match_parent"

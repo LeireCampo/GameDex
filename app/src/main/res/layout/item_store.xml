@@ -9,8 +9,11 @@
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
     app:strokeWidth="1dp"
-    app:strokeColor="@color/neon_blue"
-    android:backgroundTint="@color/dark_surface">
+    app:strokeColor="@color/primary_green"
+    android:backgroundTint="@color/card_background"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,6 +24,7 @@
             android:id="@+id/image_store_icon"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:src="@drawable/ic_store"
             android:contentDescription="@string/store_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -34,6 +38,7 @@
             android:layout_marginStart="12dp"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textColor="@color/white"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/image_store_icon"
             app:layout_constraintTop_toTopOf="@id/image_store_icon"
             app:layout_constraintBottom_toBottomOf="@id/image_store_icon"
@@ -42,10 +47,13 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_buy"
+            style="@style/Widget.GameDex.Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:text="@string/buy"
             android:textSize="12sp"
+            android:backgroundTint="@color/primary_green"
+            android:textColor="@color/background_black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />

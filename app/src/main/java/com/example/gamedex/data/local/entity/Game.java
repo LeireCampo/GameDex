@@ -5,6 +5,9 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.example.gamedex.data.remote.model.GameDetailResponse;
+import com.example.gamedex.data.remote.model.GameResponse;
+
 @Entity(
         tableName = "games",
         indices = {
@@ -191,5 +194,35 @@ public class Game {
 
     public void setSuggestedTags(String suggestedTags) {
         this.suggestedTags = suggestedTags;
+    }
+
+    public static Game fromResponseToEntity(GameResponse response) {
+        Game game = new Game(String.valueOf(response.getId()), response.getName());
+        game.setCoverUrl(response.getBackgroundImage());
+        game.setReleaseDate(response.getReleaseDate());
+        game.setGlobalRating(response.getRating());
+        game.setRatingsCount(response.getRatingsCount()); // AÑADIR ESTA LÍNEA
+
+        // ... resto del código existente ...
+
+        return game;
+    }
+
+    public static Game fromDetailResponseToEntity(GameDetailResponse response) {
+        if (response == null) {
+            return new Game("0", "Juego no encontrado");
+        }
+
+        Game game = new Game(String.valueOf(response.getId()), response.getName());
+
+        // ... código existente ...
+
+        game.setGlobalRating(response.getRating());
+        game.setRatingsCount(response.getRatingsCount()); // AÑADIR ESTA LÍNEA
+        game.setDescription(response.getDescription());
+
+        // ... resto del código existente ...
+
+        return game;
     }
 }

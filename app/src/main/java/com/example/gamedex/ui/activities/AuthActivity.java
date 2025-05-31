@@ -1,6 +1,5 @@
 package com.example.gamedex.ui.activities;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -222,5 +221,11 @@ public class AuthActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Permitir salir de la app desde la pantalla de autenticación
+        super.onBackPressed();
     }
 }

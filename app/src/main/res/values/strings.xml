@@ -173,5 +173,37 @@
     <string name="to_year">Hasta</string>
     <string name="year">Año</string>
     <string name="invalid_year">Año inválido</string>
+    <!-- Añadir a strings.xml -->
+
+
+    <!-- Añadir estos strings a strings.xml -->
+
+    <!-- Tags y etiquetas -->
+    <string name="my_tags">Mis Etiquetas</string>
+    <string name="create_tag">Crear Etiqueta</string>
+    <string name="tag_name">Nombre de la etiqueta</string>
+    <string name="tag_created">Etiqueta creada correctamente</string>
+    <string name="tag_deleted">Etiqueta eliminada</string>
+    <string name="delete_tag">Eliminar etiqueta</string>
+    <string name="view_games_with_tag">Ver juegos con esta etiqueta</string>
+    <string name="confirm_delete_tag">¿Eliminar esta etiqueta?</string>
+    <string name="tag_has_games">Esta etiqueta tiene juegos asociados</string>
+
+    <!-- Valoraciones -->
+    <string name="no_ratings_yet">De momento no tiene valoraciones</string>
+    <string name="not_rated_by_user">Sin valorar</string>
+    <string name="ratings_count">%1$d valoraciones</string>
+
+    <!-- Iconos descripción -->
+    <string name="ic_tag">Tag</string>
+    <string name="ic_chevron_right">Flecha derecha</string>
+
+    <!-- Mensajes de error y éxito -->
+    <string name="tag_name_empty">El nombre de la etiqueta no puede estar vacío</string>
+    <string name="tag_name_too_long">El nombre no puede superar los 20 caracteres</string>
+    <string name="tag_already_exists">Ya existe una etiqueta con ese nombre</string>
+    <string name="error_creating_tag">Error al crear la etiqueta</string>
+    <string name="error_deleting_tag">Error al eliminar la etiqueta</string>
+
 
 </resources>

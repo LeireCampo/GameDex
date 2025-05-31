@@ -13,7 +13,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:usesCleartextTraffic="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logosinfondo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -53,6 +53,14 @@
             android:name=".ui.activities.GameDetailActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ui.activities.GamesByTagActivity"
+            android:exported="false"
+            android:theme="@style/Theme.GameDex"
+            android:parentActivityName=".MainActivity" />
+
+        <!-- También asegurarse de que GameDetailActivity esté declarada -->
 
 
     </application>

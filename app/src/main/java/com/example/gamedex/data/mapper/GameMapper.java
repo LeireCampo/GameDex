@@ -21,6 +21,7 @@ public class GameMapper {
         game.setCoverUrl(response.getBackgroundImage());
         game.setReleaseDate(response.getReleaseDate());
         game.setGlobalRating(response.getRating());
+        game.setRatingsCount(response.getRatingsCount());
 
         // CORRECCIÓN: Usar el método getDeveloper() que ya existe en GameResponse
         game.setDeveloper(response.getDeveloper());
@@ -48,20 +49,33 @@ public class GameMapper {
         }
         game.setGenres(genresArray.toString());
 
-        // Capturar video clip si está disponible
+        // CORRECCIÓN: Capturar video clip con validación mejorada
         if (response.getVideoClip() != null) {
-            String videoUrl = response.getVideoClip().getVideoUrl();
-            if (videoUrl == null || videoUrl.isEmpty()) {
+            String videoUrl = null;
+
+            // Intentar obtener la mejor URL disponible
+            if (response.getVideoClip().getVideoUrl() != null &&
+                    !response.getVideoClip().getVideoUrl().isEmpty() &&
+                    !response.getVideoClip().getVideoUrl().equals("null")) {
+                videoUrl = response.getVideoClip().getVideoUrl();
+            } else if (response.getVideoClip().getClipUrl() != null &&
+                    !response.getVideoClip().getClipUrl().isEmpty() &&
+                    !response.getVideoClip().getClipUrl().equals("null")) {
                 videoUrl = response.getVideoClip().getClipUrl();
             }
-            game.setTrailerUrl(videoUrl);
+
+            // Solo establecer si hay una URL válida
+            if (videoUrl != null) {
+                game.setTrailerUrl(videoUrl);
+                Log.d(TAG, "Trailer URL encontrada para " + response.getName() + ": " + videoUrl);
+            }
         }
 
         // Capturar capturas de pantalla
         if (response.getScreenshots() != null && !response.getScreenshots().isEmpty()) {
             JSONArray screenshotsArray = new JSONArray();
             for (GameResponse.Screenshot screenshot : response.getScreenshots()) {
-                if (screenshot.getImageUrl() != null) {
+                if (screenshot.getImageUrl() != null && !screenshot.getImageUrl().isEmpty()) {
                     screenshotsArray.put(screenshot.getImageUrl());
                 }
             }
@@ -70,26 +84,42 @@ public class GameMapper {
             }
         }
 
-        // Capturar tiendas
+        // CORRECCIÓN: Capturar tiendas con validación mejorada
         if (response.getStores() != null && !response.getStores().isEmpty()) {
             JSONArray storesArray = new JSONArray();
             for (GameResponse.StoreWrapper storeWrapper : response.getStores()) {
                 try {
-                    JSONObject storeObject = new JSONObject();
-                    storeObject.put("name", storeWrapper.getStore().getName());
-                    storeObject.put("url", storeWrapper.getUrl());
+                    if (storeWrapper.getStore() != null) {
+                        JSONObject storeObject = new JSONObject();
+                        String storeName = storeWrapper.getStore().getName();
+                        String storeUrl = storeWrapper.getUrl();
 
-                    if (storeWrapper.getStore().getDomain() != null) {
-                        storeObject.put("domain", storeWrapper.getStore().getDomain());
+                        // Si no hay URL específica, generar una genérica
+                        if (storeUrl == null || storeUrl.isEmpty()) {
+                            storeUrl = generateGenericStoreUrl(storeName);
+                        }
+
+                        // Solo añadir si tenemos nombre y URL válidos
+                        if (storeName != null && !storeName.isEmpty() &&
+                                storeUrl != null && !storeUrl.isEmpty()) {
+
+                            storeObject.put("name", storeName);
+                            storeObject.put("url", storeUrl);
+
+                            if (storeWrapper.getStore().getDomain() != null) {
+                                storeObject.put("domain", storeWrapper.getStore().getDomain());
+                            }
+
+                            storesArray.put(storeObject);
+                        }
                     }
-
-                    storesArray.put(storeObject);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error al crear JSON de tienda: " + e.getMessage());
                 }
             }
             if (storesArray.length() > 0) {
                 game.setStoresInfo(storesArray.toString());
+                Log.d(TAG, "Tiendas encontradas para " + response.getName() + ": " + storesArray.length());
             }
         }
 
@@ -147,7 +177,96 @@ public class GameMapper {
             game.setGenres(genresArray.toString());
         }
 
+        // CORRECCIÓN: Capturar trailer del GameDetailResponse si está disponible
+        if (response.getVideoClip() != null) {
+            String videoUrl = null;
+
+            if (response.getVideoClip().getVideoUrl() != null &&
+                    !response.getVideoClip().getVideoUrl().isEmpty() &&
+                    !response.getVideoClip().getVideoUrl().equals("null")) {
+                videoUrl = response.getVideoClip().getVideoUrl();
+            }
+
+            if (videoUrl != null) {
+                game.setTrailerUrl(videoUrl);
+            }
+        }
+
+        // CORRECCIÓN: Capturar tiendas del GameDetailResponse
+        if (response.getStores() != null && !response.getStores().isEmpty()) {
+            JSONArray storesArray = new JSONArray();
+            for (GameResponse.StoreWrapper storeWrapper : response.getStores()) {
+                try {
+                    if (storeWrapper.getStore() != null) {
+                        JSONObject storeObject = new JSONObject();
+                        String storeName = storeWrapper.getStore().getName();
+                        String storeUrl = storeWrapper.getUrl();
+
+                        if (storeUrl == null || storeUrl.isEmpty()) {
+                            storeUrl = generateGenericStoreUrl(storeName);
+                        }
+
+                        if (storeName != null && !storeName.isEmpty() &&
+                                storeUrl != null && !storeUrl.isEmpty()) {
+
+                            storeObject.put("name", storeName);
+                            storeObject.put("url", storeUrl);
+
+                            if (storeWrapper.getStore().getDomain() != null) {
+                                storeObject.put("domain", storeWrapper.getStore().getDomain());
+                            }
+
+                            storesArray.put(storeObject);
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error al crear JSON de tienda en detalles: " + e.getMessage());
+                }
+            }
+            if (storesArray.length() > 0) {
+                game.setStoresInfo(storesArray.toString());
+            }
+        }
+
         return game;
+    }
+
+    /**
+     * Genera URLs genéricas para tiendas conocidas
+     */
+    private static String generateGenericStoreUrl(String storeName) {
+        if (storeName == null) return null;
+
+        String lowerStoreName = storeName.toLowerCase();
+
+        if (lowerStoreName.contains("steam")) {
+            return "https://store.steampowered.com/";
+        } else if (lowerStoreName.contains("playstation") || lowerStoreName.contains("ps store")) {
+            return "https://store.playstation.com/";
+        } else if (lowerStoreName.contains("xbox") || lowerStoreName.contains("microsoft")) {
+            return "https://www.microsoft.com/store/games/xbox/";
+        } else if (lowerStoreName.contains("nintendo") || lowerStoreName.contains("eshop")) {
+            return "https://www.nintendo.com/us/store/";
+        } else if (lowerStoreName.contains("epic") || lowerStoreName.contains("epic games")) {
+            return "https://store.epicgames.com/";
+        } else if (lowerStoreName.contains("gog")) {
+            return "https://www.gog.com/";
+        } else if (lowerStoreName.contains("origin")) {
+            return "https://www.origin.com/";
+        } else if (lowerStoreName.contains("ubisoft")) {
+            return "https://store.ubisoft.com/";
+        } else if (lowerStoreName.contains("battle") || lowerStoreName.contains("blizzard")) {
+            return "https://shop.battle.net/";
+        } else if (lowerStoreName.contains("amazon")) {
+            return "https://www.amazon.com/videogames/";
+        } else if (lowerStoreName.contains("google") || lowerStoreName.contains("play")) {
+            return "https://play.google.com/store/games/";
+        } else if (lowerStoreName.contains("app store") || lowerStoreName.contains("apple")) {
+            return "https://apps.apple.com/us/genre/ios-games/id6014";
+        }
+
+        // Para tiendas desconocidas, devolver una búsqueda genérica
+        return "https://www.google.com/search?q=" + storeName.replace(" ", "+") + "+game+store";
     }
 
     public static List<Game> fromResponseListToEntityList(List<GameResponse> responses) {

@@ -68,6 +68,14 @@ public abstract class GameDexDatabase extends RoomDatabase {
         }
     };
 
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Añadir el nuevo campo ratingsCount a la tabla games
+            database.execSQL("ALTER TABLE games ADD COLUMN ratingsCount INTEGER");
+        }
+    };
+
     public static GameDexDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (GameDexDatabase.class) {
@@ -76,7 +84,7 @@ public abstract class GameDexDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     GameDexDatabase.class,
                                     "gamedex_database")
-                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4) // Añadir ambas migraciones
+                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // Añadir nueva migración
                             .fallbackToDestructiveMigration() // Fallback si falla la migración
                             .build();
                 }

@@ -13,6 +13,7 @@ import com.example.gamedex.data.local.entity.GameTagCrossRef;
 import com.example.gamedex.data.local.entity.Tag;
 
 import java.util.List;
+import java.util.Map;
 
 @Dao
 public interface TagDao {
@@ -85,4 +86,56 @@ public interface TagDao {
     // Método para obtener tag por nombre
     @Query("SELECT * FROM tags WHERE name = :tagName LIMIT 1")
     Tag getTagByName(String tagName);
+
+
+    // Método síncrono para obtener tags del usuario
+    @Query("SELECT * FROM tags WHERE isSystemTag = 0")
+    List<Tag> getUserTagsSync();
+
+    // Método para obtener juegos asociados a un tag específico
+    @Query("SELECT games.* FROM games " +
+            "INNER JOIN game_tag_cross_ref ON games.id = game_tag_cross_ref.gameId " +
+            "WHERE game_tag_cross_ref.tagId = :tagId")
+    LiveData<List<Game>> getGamesByTag(int tagId);
+
+    // Método para obtener el total de tags únicos que tiene un usuario
+    @Query("SELECT COUNT(DISTINCT id) FROM tags WHERE isSystemTag = 0")
+    int getTotalUserTagsCount();
+
+    // Método para obtener tags más utilizados
+    @Query("SELECT tags.*, COUNT(game_tag_cross_ref.tagId) as usage_count " +
+            "FROM tags " +
+            "LEFT JOIN game_tag_cross_ref ON tags.id = game_tag_cross_ref.tagId " +
+            "WHERE tags.isSystemTag = 0 " +
+            "GROUP BY tags.id " +
+            "ORDER BY usage_count DESC " +
+            "LIMIT :limit")
+    List<Tag> getMostUsedTags(int limit);
+
+    // Método para verificar si un juego tiene un tag específico
+    @Query("SELECT COUNT(*) FROM game_tag_cross_ref " +
+            "WHERE gameId = :gameId AND tagId = :tagId")
+    int gameHasTag(String gameId, int tagId);
+
+    // Método para obtener todos los tags de un juego (síncrono)
+    @Query("SELECT tags.* FROM tags " +
+            "INNER JOIN game_tag_cross_ref ON tags.id = game_tag_cross_ref.tagId " +
+            "WHERE game_tag_cross_ref.gameId = :gameId")
+    List<Tag> getTagsForGameSync(String gameId);
+
+    // Método para limpiar tags huérfanos (sin juegos asociados)
+    @Query("DELETE FROM tags WHERE id NOT IN " +
+            "(SELECT DISTINCT tagId FROM game_tag_cross_ref) " +
+            "AND isSystemTag = 0")
+    int deleteOrphanTags();
+
+    // Método para obtener estadísticas de tags
+    @Query("SELECT tags.name, COUNT(game_tag_cross_ref.gameId) as count " +
+            "FROM tags " +
+            "LEFT JOIN game_tag_cross_ref ON tags.id = game_tag_cross_ref.tagId " +
+            "WHERE tags.isSystemTag = 0 " +
+            "GROUP BY tags.id, tags.name " +
+            "HAVING count > 0 " +
+            "ORDER BY count DESC")
+    Map<String, Integer> getTagStatisticsSync();
 }

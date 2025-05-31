@@ -3,6 +3,7 @@ package com.example.gamedex.ui.viewmodels;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.gamedex.data.local.entity.Game;
@@ -13,6 +14,7 @@ import com.example.gamedex.data.remote.model.VideoListResponse;
 import com.example.gamedex.data.repository.GameRepository;
 import com.example.gamedex.data.repository.TagRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,7 +64,10 @@ public class GameDetailViewModel extends ViewModel {
         return screenshots;
     }
 
+    // Simplificar los observables para videos ya que RAWG no los tiene
     public LiveData<List<VideoListResponse.Video>> getVideos() {
+        MutableLiveData<List<VideoListResponse.Video>> videos = new MutableLiveData<>();
+        videos.setValue(new ArrayList<>()); // Lista vacía por defecto
         return videos;
     }
 
@@ -121,4 +126,7 @@ public class GameDetailViewModel extends ViewModel {
         super.onCleared();
         executorService.shutdown();
     }
+    // Simplificar los observables para videos ya que RAWG no los tiene
+
+
 }

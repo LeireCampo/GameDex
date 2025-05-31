@@ -20,6 +20,7 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +34,7 @@ import com.example.gamedex.data.local.entity.Tag;
 import com.example.gamedex.data.model.Store;
 import com.example.gamedex.data.remote.model.ScreenshotListResponse;
 import com.example.gamedex.data.remote.model.StoreListResponse;
+import com.example.gamedex.data.repository.TagRepository;
 import com.example.gamedex.ui.adapters.FullScreenImageAdapter;
 import com.example.gamedex.ui.adapters.ScreenshotAdapter;
 import com.example.gamedex.ui.adapters.StoreAdapter;
@@ -191,13 +193,18 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
     }
 
     private void setupObservers() {
-        // Observar datos locales
+        // Observar datos locales primero
         viewModel.getGameWithTags().observe(this, gameWithTags -> {
             if (gameWithTags != null && gameWithTags.game != null) {
                 Game game = gameWithTags.game;
                 isGameInLibrary = game.isInLibrary();
                 updateUI(game);
                 updateTagsChips(gameWithTags.tags);
+
+                // CORRECCIÓN: Configurar multimedia desde datos locales primero
+                setupTrailer(game);
+                setupStoresFromGame(game);
+                setupScreenshotsFromGame(game);
             }
         });
 
@@ -210,35 +217,44 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                 // Mantener el estado de biblioteca y tags
                 game.setInLibrary(isGameInLibrary);
                 updateUI(game);
+
+                // CORRECCIÓN: Actualizar multimedia desde datos de la API
                 setupTrailer(game);
-                setupScreenshotsFromGame(game);
                 setupStoresFromGame(game);
+                setupScreenshotsFromGame(game);
+
+                Log.d(TAG, "Datos del juego actualizados desde API: " + game.getTitle());
             } else {
-                // Error al cargar los datos del juego
+                Log.e(TAG, "Error: No se pudieron cargar los datos del juego desde la API");
                 Snackbar.make(contentLayout, R.string.error_loading_game_details, Snackbar.LENGTH_LONG)
                         .setAction(R.string.retry, v -> loadGameData())
                         .show();
             }
         });
 
-        // Observar screenshots de la API
+        // Observar screenshots de la API (prioridad sobre datos locales)
         viewModel.getScreenshots().observe(this, screenshots -> {
             if (screenshots != null && !screenshots.isEmpty()) {
                 List<String> screenshotUrls = screenshots.stream()
                         .map(ScreenshotListResponse.Screenshot::getImageUrl)
+                        .filter(url -> url != null && !url.isEmpty())
                         .collect(Collectors.toList());
-                setupScreenshots(screenshotUrls);
+
+                if (!screenshotUrls.isEmpty()) {
+                    setupScreenshots(screenshotUrls);
+                    Log.d(TAG, "Screenshots cargadas desde API: " + screenshotUrls.size());
+                }
             }
         });
 
-        // Observar tiendas de la API
+        // Observar tiendas de la API (prioridad sobre datos locales)
         viewModel.getStores().observe(this, gameStores -> {
             if (gameStores != null && !gameStores.isEmpty()) {
                 setupStores(gameStores);
+                Log.d(TAG, "Tiendas cargadas desde API: " + gameStores.size());
             }
         });
     }
-
     private void setupClickListeners() {
         buttonAddToLibrary.setOnClickListener(v -> {
             viewModel.toggleInLibrary();
@@ -363,7 +379,33 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                 textGlobalRating.setText("N/A");
             }
         }
+        if (ratingBarGlobal != null && textGlobalRating != null) {
+            if (game.getGlobalRating() != null && game.getGlobalRating() > 0) {
+                ratingBarGlobal.setRating(game.getGlobalRating());
+                textGlobalRating.setText(String.format("%.1f", game.getGlobalRating()));
+                ratingBarGlobal.setVisibility(View.VISIBLE);
+            } else {
+                // Sin valoraciones - mostrar mensaje
+                ratingBarGlobal.setVisibility(View.GONE);
+                textGlobalRating.setText("De momento no tiene valoraciones");
+                textGlobalRating.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            }
+        }
 
+        // MODIFICACIÓN: Valoración del usuario
+        if (ratingBar != null && textRatingValue != null) {
+            if (game.getUserRating() != null && game.getUserRating() > 0) {
+                ratingBar.setRating(game.getUserRating());
+                textRatingValue.setText(String.format("%.1f", game.getUserRating()));
+                ratingBar.setVisibility(View.VISIBLE);
+            } else {
+                ratingBar.setRating(0f);
+                textRatingValue.setText("Sin valorar");
+                textRatingValue.setTextColor(ContextCompat.getColor(this, R.color.text_hint));
+            }
+        }
+
+        updateRatingsDisplay(game);
         // Actualizar estado de biblioteca
         updateLibraryStatus(game.isInLibrary(), game.getStatus());
     }
@@ -445,8 +487,13 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
 
     // Métodos para trailer/video
     private void setupTrailer(Game game) {
+        TextView trailerTitle = findViewById(R.id.text_trailer_title);
+        View dividerAfterTrailer = findViewById(R.id.divider_after_trailer);
+
         if (game.getTrailerUrl() != null && !game.getTrailerUrl().isEmpty()) {
             cardTrailer.setVisibility(View.VISIBLE);
+            if (trailerTitle != null) trailerTitle.setVisibility(View.VISIBLE);
+            if (dividerAfterTrailer != null) dividerAfterTrailer.setVisibility(View.VISIBLE);
 
             // Cargar imagen de preview
             if (game.getCoverUrl() != null) {
@@ -459,7 +506,10 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
             buttonPlayTrailer.setOnClickListener(v -> playTrailer(game.getTrailerUrl()));
             buttonWatchTrailer.setOnClickListener(v -> openTrailerInBrowser(game.getTrailerUrl()));
         } else {
+            // OCULTAR COMPLETAMENTE la sección de trailer si no hay video
             cardTrailer.setVisibility(View.GONE);
+            if (trailerTitle != null) trailerTitle.setVisibility(View.GONE);
+            if (dividerAfterTrailer != null) dividerAfterTrailer.setVisibility(View.GONE);
         }
     }
 
@@ -568,64 +618,111 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
 
     // Métodos para tiendas
     private void setupStores(List<StoreListResponse.GameStore> gameStores) {
+        if (recyclerStores == null) return;
+
+        if (gameStores == null || gameStores.isEmpty()) {
+            recyclerStores.setVisibility(View.GONE);
+            Log.d(TAG, "No hay datos de tiendas de la API");
+            return;
+        }
+
         List<Store> stores = new ArrayList<>();
 
         for (StoreListResponse.GameStore gameStore : gameStores) {
             if (gameStore.getStore() != null) {
+                String storeName = gameStore.getStore().getName();
                 String storeUrl = gameStore.getStoreUrl();
-                if (storeUrl == null || storeUrl.isEmpty()) {
-                    if (gameStore.getStore().getDomain() != null) {
-                        storeUrl = "https://" + gameStore.getStore().getDomain();
-                    }
+
+                // Si no hay URL específica, generar una genérica
+                if (storeUrl == null || storeUrl.isEmpty() || storeUrl.equals("null")) {
+                    storeUrl = getGenericStoreUrl(storeName);
                 }
 
-                if (storeUrl != null && !storeUrl.isEmpty()) {
+                // CORRECCIÓN: Validar mejor los datos antes de añadir
+                if (storeName != null && !storeName.isEmpty() &&
+                        storeUrl != null && !storeUrl.isEmpty() && !storeUrl.equals("null")) {
+
                     Store store = new Store(
-                            gameStore.getStore().getName(),
+                            storeName,
                             storeUrl,
                             gameStore.getStore().getImageBackground()
                     );
                     stores.add(store);
+                    Log.d(TAG, "Añadida tienda desde API: " + storeName + " -> " + storeUrl);
                 }
             }
         }
 
-        setupStoreAdapter(stores);
+        if (!stores.isEmpty()) {
+            setupStoreAdapter(stores);
+            recyclerStores.setVisibility(View.VISIBLE);
+            Log.d(TAG, "Configuradas " + stores.size() + " tiendas desde API");
+        } else {
+            recyclerStores.setVisibility(View.GONE);
+            Log.d(TAG, "No se encontraron tiendas válidas en la API");
+        }
     }
 
+
     private void setupStoresFromGame(Game game) {
-        if (game.getStoresInfo() != null) {
-            try {
-                JSONArray storesArray = new JSONArray(game.getStoresInfo());
-                List<Store> stores = new ArrayList<>();
+        if (recyclerStores == null) return;
 
-                for (int i = 0; i < storesArray.length(); i++) {
-                    JSONObject storeObj = storesArray.getJSONObject(i);
-                    String name = storeObj.optString("name", "Tienda");
-                    String url = storeObj.optString("url", "");
-                    String iconUrl = storeObj.optString("iconUrl", "");
+        String storesInfo = game.getStoresInfo();
+        if (storesInfo == null || storesInfo.isEmpty()) {
+            recyclerStores.setVisibility(View.GONE);
+            Log.d(TAG, "No hay información de tiendas para: " + game.getTitle());
+            return;
+        }
 
-                    if (!url.isEmpty()) {
-                        stores.add(new Store(name, url, iconUrl));
-                    }
+        try {
+            JSONArray storesArray = new JSONArray(storesInfo);
+            List<Store> stores = new ArrayList<>();
+
+            for (int i = 0; i < storesArray.length(); i++) {
+                JSONObject storeObj = storesArray.getJSONObject(i);
+                String name = storeObj.optString("name", "");
+                String url = storeObj.optString("url", "");
+                String iconUrl = storeObj.optString("domain", "");
+
+                // CORRECCIÓN: Validar mejor las URLs y nombres
+                if (!name.isEmpty() && !url.isEmpty() && !url.equals("null")) {
+                    stores.add(new Store(name, url, iconUrl));
+                    Log.d(TAG, "Añadida tienda: " + name + " -> " + url);
                 }
-
-                if (!stores.isEmpty()) {
-                    setupStoreAdapter(stores);
-                }
-            } catch (JSONException e) {
-                Log.e(TAG, "Error al parsear tiendas: " + e.getMessage());
             }
+
+            if (!stores.isEmpty()) {
+                setupStoreAdapter(stores);
+                recyclerStores.setVisibility(View.VISIBLE);
+                Log.d(TAG, "Configuradas " + stores.size() + " tiendas para: " + game.getTitle());
+            } else {
+                recyclerStores.setVisibility(View.GONE);
+                Log.d(TAG, "No se encontraron tiendas válidas para: " + game.getTitle());
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parseando tiendas del juego " + game.getTitle() + ": " + e.getMessage());
+            recyclerStores.setVisibility(View.GONE);
         }
     }
 
     private void setupStoreAdapter(List<Store> stores) {
+        if (recyclerStores == null || stores == null || stores.isEmpty()) return;
+
         if (storeAdapter == null) {
             storeAdapter = new StoreAdapter(this, stores);
-            recyclerStores.setLayoutManager(new LinearLayoutManager(this));
+
+            // CORRECCIÓN: Configurar LayoutManager correctamente
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            recyclerStores.setLayoutManager(layoutManager);
             recyclerStores.setAdapter(storeAdapter);
+
+            // Deshabilitar scroll anidado para evitar problemas
+            recyclerStores.setNestedScrollingEnabled(false);
+
+            Log.d(TAG, "StoreAdapter inicializado con " + stores.size() + " tiendas");
         } else {
             storeAdapter.updateStores(stores);
+            Log.d(TAG, "StoreAdapter actualizado con " + stores.size() + " tiendas");
         }
     }
 
@@ -663,24 +760,39 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
     }
 
     private void showAddTagDialog() {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
-        View view = getLayoutInflater().inflate(R.layout.dialog_add_tag, null);
-        final com.google.android.material.textfield.TextInputEditText editTagName = view.findViewById(R.id.edit_tag_name);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_tag, null);
+        final com.google.android.material.textfield.TextInputEditText editTagName =
+                dialogView.findViewById(R.id.edit_tag_name);
 
-        builder.setTitle(R.string.add_tag)
-                .setView(view)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    String tagName = editTagName.getText().toString().trim();
-                    if (!tagName.isEmpty()) {
-                        Tag newTag = new Tag(tagName, "#FF5722");
-                        newTag.setId((int) (System.currentTimeMillis() % 1000));
-                        viewModel.addTagToGame(newTag.getId());
-                        Snackbar.make(contentLayout, getString(R.string.tag_added), Snackbar.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .create()
-                .show();
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Añadir Etiqueta Personal")
+                .setView(dialogView)
+                .setPositiveButton("Crear", null) // Lo configuramos después
+                .setNegativeButton("Cancelar", null)
+                .create();
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Button positiveButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(v -> {
+                String tagName = editTagName.getText().toString().trim();
+
+                if (tagName.isEmpty()) {
+                    editTagName.setError("El nombre de la etiqueta no puede estar vacío");
+                    return;
+                }
+
+                if (tagName.length() > 20) {
+                    editTagName.setError("El nombre no puede superar los 20 caracteres");
+                    return;
+                }
+
+                // Crear la etiqueta personalizada
+                createPersonalTag(tagName);
+                dialog.dismiss();
+            });
+        });
+
+        dialog.show();
     }
 
     @Override
@@ -691,4 +803,148 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private String getGenericStoreUrl(String storeName) {
+        if (storeName == null || storeName.isEmpty()) {
+            return null;
+        }
+
+        String lowerStoreName = storeName.toLowerCase().trim();
+
+        // Steam y variantes
+        if (lowerStoreName.contains("steam")) {
+            return "https://store.steampowered.com/";
+        }
+        // PlayStation
+        else if (lowerStoreName.contains("playstation") || lowerStoreName.contains("ps store") ||
+                lowerStoreName.contains("psn")) {
+            return "https://store.playstation.com/";
+        }
+        // Xbox/Microsoft
+        else if (lowerStoreName.contains("xbox") || lowerStoreName.contains("microsoft") ||
+                lowerStoreName.contains("windows store")) {
+            return "https://www.microsoft.com/store/games/xbox/";
+        }
+        // Nintendo
+        else if (lowerStoreName.contains("nintendo") || lowerStoreName.contains("eshop") ||
+                lowerStoreName.contains("switch")) {
+            return "https://www.nintendo.com/us/store/";
+        }
+        // Epic Games
+        else if (lowerStoreName.contains("epic") || lowerStoreName.contains("epic games")) {
+            return "https://store.epicgames.com/";
+        }
+        // GOG
+        else if (lowerStoreName.contains("gog")) {
+            return "https://www.gog.com/";
+        }
+        // Origin/EA
+        else if (lowerStoreName.contains("origin") || lowerStoreName.contains("ea app")) {
+            return "https://www.ea.com/games";
+        }
+        // Ubisoft
+        else if (lowerStoreName.contains("ubisoft") || lowerStoreName.contains("uplay")) {
+            return "https://store.ubisoft.com/";
+        }
+        // Battle.net/Blizzard
+        else if (lowerStoreName.contains("battle") || lowerStoreName.contains("blizzard")) {
+            return "https://shop.battle.net/";
+        }
+        // Amazon
+        else if (lowerStoreName.contains("amazon")) {
+            return "https://www.amazon.com/videogames/";
+        }
+        // Google Play
+        else if (lowerStoreName.contains("google") || lowerStoreName.contains("play store")) {
+            return "https://play.google.com/store/games/";
+        }
+        // App Store
+        else if (lowerStoreName.contains("app store") || lowerStoreName.contains("apple") ||
+                lowerStoreName.contains("ios")) {
+            return "https://apps.apple.com/us/genre/ios-games/id6014";
+        }
+        // Itch.io
+        else if (lowerStoreName.contains("itch")) {
+            return "https://itch.io/";
+        }
+        // Humble Store
+        else if (lowerStoreName.contains("humble")) {
+            return "https://www.humblebundle.com/store";
+        }
+        else {
+            // Para tiendas desconocidas, crear una búsqueda genérica
+            String searchTerm = storeName.replace(" ", "+").replace("store", "").trim();
+            return "https://www.google.com/search?q=" + searchTerm + "+game+store";
+        }
+    }
+
+    private void updateRatingsDisplay(Game game) {
+        // Valoración del usuario
+        if (ratingBar != null && textRatingValue != null) {
+            if (game.getUserRating() != null && game.getUserRating() > 0) {
+                ratingBar.setRating(game.getUserRating());
+                textRatingValue.setText(String.format("%.1f", game.getUserRating()));
+            } else {
+                ratingBar.setRating(0f);
+                textRatingValue.setText("Sin valorar");
+            }
+        }
+
+        // Valoración global
+        if (ratingBarGlobal != null && textGlobalRating != null) {
+            if (game.getGlobalRating() != null && game.getGlobalRating() > 0) {
+                ratingBarGlobal.setRating(game.getGlobalRating());
+                textGlobalRating.setText(String.format("%.1f (%d valoraciones)",
+                        game.getGlobalRating(),
+                        game.getRatingsCount() != null ? game.getRatingsCount() : 0));
+            } else {
+                ratingBarGlobal.setRating(0f);
+                textGlobalRating.setText("De momento no tiene valoraciones");
+            }
+        }
+    }
+
+    private void createPersonalTag(String tagName) {
+        executorService.execute(() -> {
+            try {
+                TagRepository tagRepository = new TagRepository(getApplication());
+
+                // Verificar si ya existe
+                if (tagRepository.checkTagExists(tagName) > 0) {
+                    runOnUiThread(() -> {
+                        Snackbar.make(contentLayout, "Ya existe una etiqueta con ese nombre",
+                                Snackbar.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+
+                // Crear nueva etiqueta con color aleatorio
+                String[] colors = {"#FF5722", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5",
+                        "#2196F3", "#03A9F4", "#00BCD4", "#009688", "#4CAF50",
+                        "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800"};
+                String randomColor = colors[(int) (Math.random() * colors.length)];
+
+                Tag newTag = new Tag(tagName, randomColor);
+                newTag.setSystemTag(false); // Marcar como etiqueta personal
+
+                long tagId = tagRepository.insertTagAndGetId(newTag);
+
+                // Asociar al juego actual
+                tagRepository.addTagToGame(gameId, (int) tagId);
+
+                runOnUiThread(() -> {
+                    Snackbar.make(contentLayout, "Etiqueta '" + tagName + "' creada y añadida",
+                            Snackbar.LENGTH_SHORT).show();
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error creando etiqueta personal: " + e.getMessage());
+                runOnUiThread(() -> {
+                    Snackbar.make(contentLayout, "Error al crear la etiqueta",
+                            Snackbar.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
 }
