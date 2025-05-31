@@ -27,6 +27,17 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
+    <!-- Agregar este estilo a themes.xml (tanto values como values-night) -->
+
+    <style name="ThemeOverlay_App_MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:colorBackground">@color/dark_surface</item>
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+    </style>
+
     <style name="Theme.GameDex" parent="Base.Theme.GameDex" />
 
     <!-- Estilo para cards modernas -->

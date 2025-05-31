@@ -21,7 +21,7 @@ public class GameMapper {
         game.setCoverUrl(response.getBackgroundImage());
         game.setReleaseDate(response.getReleaseDate());
         game.setGlobalRating(response.getRating());
-        game.setRatingsCount(response.getRatingsCount());
+        // ELIMINADO: game.setRatingsCount(response.getRatingsCount());
 
         // CORRECCIÓN: Usar el método getDeveloper() que ya existe en GameResponse
         game.setDeveloper(response.getDeveloper());
@@ -142,6 +142,7 @@ public class GameMapper {
         }
 
         game.setGlobalRating(response.getRating());
+        // ELIMINADO: game.setRatingsCount(response.getRatingsCount());
         game.setDescription(response.getDescription());
 
         // Desarrollador y publisher

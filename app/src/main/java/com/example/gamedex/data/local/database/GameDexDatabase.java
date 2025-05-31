@@ -9,10 +9,13 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.gamedex.data.local.dao.CustomTagDao;
 import com.example.gamedex.data.local.dao.GameDao;
 import com.example.gamedex.data.local.dao.TagDao;
 import com.example.gamedex.data.local.dao.UserDao;
+import com.example.gamedex.data.local.entity.CustomTag;
 import com.example.gamedex.data.local.entity.Game;
+import com.example.gamedex.data.local.entity.GameCustomTagCrossRef;
 import com.example.gamedex.data.local.entity.GameTagCrossRef;
 import com.example.gamedex.data.local.entity.Tag;
 import com.example.gamedex.data.local.entity.User;
@@ -22,9 +25,11 @@ import com.example.gamedex.data.local.entity.User;
                 Game.class,
                 Tag.class,
                 GameTagCrossRef.class,
-                User.class
+                User.class,
+                CustomTag.class,
+                GameCustomTagCrossRef.class
         },
-        version = 4, // Incrementado para la nueva migración
+        version = 6, // Incrementar para incluir las nuevas entidades
         exportSchema = false
 )
 public abstract class GameDexDatabase extends RoomDatabase {
@@ -32,6 +37,7 @@ public abstract class GameDexDatabase extends RoomDatabase {
     public abstract GameDao gameDao();
     public abstract TagDao tagDao();
     public abstract UserDao userDao();
+    public abstract CustomTagDao customTagDao();
 
     private static volatile GameDexDatabase INSTANCE;
 
@@ -68,14 +74,6 @@ public abstract class GameDexDatabase extends RoomDatabase {
         }
     };
 
-    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Añadir el nuevo campo ratingsCount a la tabla games
-            database.execSQL("ALTER TABLE games ADD COLUMN ratingsCount INTEGER");
-        }
-    };
-
     public static GameDexDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (GameDexDatabase.class) {
@@ -84,7 +82,7 @@ public abstract class GameDexDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     GameDexDatabase.class,
                                     "gamedex_database")
-                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // Añadir nueva migración
+                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4) // Solo las migraciones necesarias
                             .fallbackToDestructiveMigration() // Fallback si falla la migración
                             .build();
                 }

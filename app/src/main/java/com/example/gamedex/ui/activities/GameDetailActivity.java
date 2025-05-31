@@ -1,16 +1,20 @@
 package com.example.gamedex.ui.activities;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -18,6 +22,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -51,6 +56,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class GameDetailActivity extends AppCompatActivity implements ScreenshotAdapter.OnScreenshotClickListener {
@@ -486,14 +493,10 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
     }
 
     // Métodos para trailer/video
+// Métodos para trailer/video - CORREGIDO
     private void setupTrailer(Game game) {
-        TextView trailerTitle = findViewById(R.id.text_trailer_title);
-        View dividerAfterTrailer = findViewById(R.id.divider_after_trailer);
-
         if (game.getTrailerUrl() != null && !game.getTrailerUrl().isEmpty()) {
             cardTrailer.setVisibility(View.VISIBLE);
-            if (trailerTitle != null) trailerTitle.setVisibility(View.VISIBLE);
-            if (dividerAfterTrailer != null) dividerAfterTrailer.setVisibility(View.VISIBLE);
 
             // Cargar imagen de preview
             if (game.getCoverUrl() != null) {
@@ -508,8 +511,6 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         } else {
             // OCULTAR COMPLETAMENTE la sección de trailer si no hay video
             cardTrailer.setVisibility(View.GONE);
-            if (trailerTitle != null) trailerTitle.setVisibility(View.GONE);
-            if (dividerAfterTrailer != null) dividerAfterTrailer.setVisibility(View.GONE);
         }
     }
 
@@ -727,72 +728,53 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
     }
 
     // Métodos para tags
+    // Reemplazar el método updateTagsChips() en GameDetailActivity.java
+
     private void updateTagsChips(List<Tag> tags) {
         chipGroupTags.removeAllViews();
 
-        if (tags == null || tags.isEmpty()) {
-            Chip chip = new Chip(this);
-            chip.setText(R.string.no_tags);
-            chip.setClickable(false);
-            chipGroupTags.addView(chip);
-            return;
+        // Añadir chips para tags existentes
+        if (tags != null && !tags.isEmpty()) {
+            for (Tag tag : tags) {
+                Chip chip = new Chip(this);
+                chip.setText(tag.getName());
+                chip.setCloseIcon(getDrawable(R.drawable.ic_close));
+                chip.setCloseIconVisible(true);
+                chip.setChipBackgroundColorResource(R.color.primary_green);
+                chip.setTextColor(ContextCompat.getColor(this, R.color.background_black));
+                chip.setOnCloseIconClickListener(v -> {
+                    viewModel.removeTagFromGame(tag.getId());
+                    Snackbar.make(contentLayout, getString(R.string.tag_removed), Snackbar.LENGTH_SHORT).show();
+                });
+                chipGroupTags.addView(chip);
+            }
+        } else {
+            // Si no hay tags, mostrar mensaje
+            Chip noTagsChip = new Chip(this);
+            noTagsChip.setText(R.string.no_tags);
+            noTagsChip.setClickable(false);
+            noTagsChip.setChipBackgroundColorResource(android.R.color.transparent);
+            noTagsChip.setChipStrokeColorResource(R.color.border_color);
+            noTagsChip.setChipStrokeWidth(2f);
+            noTagsChip.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            chipGroupTags.addView(noTagsChip);
         }
 
-        for (Tag tag : tags) {
-            Chip chip = new Chip(this);
-            chip.setText(tag.getName());
-            chip.setCloseIcon(getDrawable(R.drawable.ic_close));
-            chip.setCloseIconVisible(true);
-            chip.setOnCloseIconClickListener(v -> {
-                viewModel.removeTagFromGame(tag.getId());
-                Snackbar.make(contentLayout, getString(R.string.tag_removed), Snackbar.LENGTH_SHORT).show();
-            });
-            chipGroupTags.addView(chip);
-        }
-
-        // Añadir chip "Añadir etiqueta"
+        // IMPORTANTE: Siempre añadir el chip "Añadir etiqueta" al final
         Chip addChip = new Chip(this);
         addChip.setText(getString(R.string.add_tag));
+        addChip.setChipIcon(ContextCompat.getDrawable(this, R.drawable.ic_add));
         addChip.setChipBackgroundColorResource(android.R.color.transparent);
-        addChip.setChipStrokeWidth(1f);
+        addChip.setChipStrokeColorResource(R.color.neon_blue);
+        addChip.setChipStrokeWidth(2f);
+        addChip.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
+        addChip.setChipIconTintResource(R.color.neon_blue);
         addChip.setOnClickListener(v -> showAddTagDialog());
         chipGroupTags.addView(addChip);
     }
 
     private void showAddTagDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_tag, null);
-        final com.google.android.material.textfield.TextInputEditText editTagName =
-                dialogView.findViewById(R.id.edit_tag_name);
-
-        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Añadir Etiqueta Personal")
-                .setView(dialogView)
-                .setPositiveButton("Crear", null) // Lo configuramos después
-                .setNegativeButton("Cancelar", null)
-                .create();
-
-        dialog.setOnShowListener(dialogInterface -> {
-            Button positiveButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
-            positiveButton.setOnClickListener(v -> {
-                String tagName = editTagName.getText().toString().trim();
-
-                if (tagName.isEmpty()) {
-                    editTagName.setError("El nombre de la etiqueta no puede estar vacío");
-                    return;
-                }
-
-                if (tagName.length() > 20) {
-                    editTagName.setError("El nombre no puede superar los 20 caracteres");
-                    return;
-                }
-
-                // Crear la etiqueta personalizada
-                createPersonalTag(tagName);
-                dialog.dismiss();
-            });
-        });
-
-        dialog.show();
+        showCreateNewTagDialog();
     }
 
     @Override
@@ -890,13 +872,11 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
             }
         }
 
-        // Valoración global
+        // Valoración global (sin mostrar número de valoraciones)
         if (ratingBarGlobal != null && textGlobalRating != null) {
             if (game.getGlobalRating() != null && game.getGlobalRating() > 0) {
                 ratingBarGlobal.setRating(game.getGlobalRating());
-                textGlobalRating.setText(String.format("%.1f (%d valoraciones)",
-                        game.getGlobalRating(),
-                        game.getRatingsCount() != null ? game.getRatingsCount() : 0));
+                textGlobalRating.setText(String.format("%.1f", game.getGlobalRating()));
             } else {
                 ratingBarGlobal.setRating(0f);
                 textGlobalRating.setText("De momento no tiene valoraciones");
@@ -905,7 +885,10 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
     }
 
     private void createPersonalTag(String tagName) {
-        executorService.execute(() -> {
+        // Usar un ExecutorService local para esta operación
+        ExecutorService localExecutor = Executors.newSingleThreadExecutor();
+
+        localExecutor.execute(() -> {
             try {
                 TagRepository tagRepository = new TagRepository(getApplication());
 
@@ -943,8 +926,57 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                     Snackbar.make(contentLayout, "Error al crear la etiqueta",
                             Snackbar.LENGTH_SHORT).show();
                 });
+            } finally {
+                localExecutor.shutdown();
             }
         });
+    }
+
+    private void showCreateNewTagDialog() {
+        // Crear un EditText simple
+        final EditText editText = new EditText(this);
+        editText.setHint("Nombre de la etiqueta");
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.setMaxLines(1);
+
+        // Aplicar padding al EditText
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        editText.setPadding(padding, padding, padding, padding);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Añadir Etiqueta Personal")
+                .setMessage("Escribe el nombre de la nueva etiqueta:")
+                .setView(editText)
+                .setPositiveButton("Crear", (dialogInterface, which) -> {
+                    String tagName = editText.getText().toString().trim();
+
+                    if (tagName.isEmpty()) {
+                        Toast.makeText(this, "El nombre no puede estar vacío", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (tagName.length() > 20) {
+                        Toast.makeText(this, "El nombre no puede superar los 20 caracteres", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    createPersonalTag(tagName);
+                })
+                .setNegativeButton("Cancelar", null)
+                .create();
+
+        dialog.show();
+
+        // Personalizar colores después de mostrar
+        Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+
+        if (positiveButton != null) {
+            positiveButton.setTextColor(ContextCompat.getColor(this, R.color.primary_green));
+        }
+        if (negativeButton != null) {
+            negativeButton.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+        }
     }
 
 }

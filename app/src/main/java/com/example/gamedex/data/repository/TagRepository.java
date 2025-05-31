@@ -57,11 +57,10 @@ public class TagRepository {
     }
 
     public Tag getTagById(int tagId) {
-        // This would normally be done asynchronously, simplified for example
         return tagDao.getTagById(tagId);
     }
 
-    // Nuevo método para verificar si existe un tag
+    // Método para verificar si existe un tag
     public int checkTagExists(String tagName) {
         try {
             return tagDao.checkTagExists(tagName);
@@ -71,7 +70,7 @@ public class TagRepository {
         }
     }
 
-    // Nuevo método para insertar tag y obtener ID
+    // Método para insertar tag y obtener ID
     public long insertTagAndGetId(Tag tag) {
         try {
             return tagDao.insertTagAndGetId(tag);
@@ -86,17 +85,12 @@ public class TagRepository {
         return tagDao.getUserTags();
     }
 
-    // Método para obtener tags por juego con detalles
-    public LiveData<List<TagWithGameCount>> getTagsWithGameCount() {
-        return tagDao.getTagsWithGameCount();
-    }
-
     // Método para obtener juegos por tag específico
     public LiveData<List<Game>> getGamesByTag(int tagId) {
         return tagDao.getGamesByTag(tagId);
     }
 
-    // Método para obtener estadísticas de tags del usuario
+    // Método para obtener estadísticas de tags del usuario - CORREGIDO
     public LiveData<Map<String, Integer>> getTagStatistics() {
         MutableLiveData<Map<String, Integer>> result = new MutableLiveData<>();
 
@@ -107,7 +101,9 @@ public class TagRepository {
 
                 for (Tag tag : userTags) {
                     int gameCount = tagDao.getGameCountForTag(tag.getId());
-                    stats.put(tag.getName(), gameCount);
+                    if (gameCount > 0) { // Solo incluir tags que tengan juegos
+                        stats.put(tag.getName(), gameCount);
+                    }
                 }
 
                 result.postValue(stats);
@@ -118,6 +114,16 @@ public class TagRepository {
         });
 
         return result;
+    }
+
+    // Método para obtener tag por nombre
+    public Tag getTagByName(String tagName) {
+        try {
+            return tagDao.getTagByName(tagName);
+        } catch (Exception e) {
+            Log.e("TagRepository", "Error obteniendo tag por nombre: " + e.getMessage());
+            return null;
+        }
     }
 
     // Método para eliminar tag solo si no tiene juegos asociados
@@ -142,17 +148,4 @@ public class TagRepository {
         void onSuccess();
         void onError(String error);
     }
-
-    // Nueva clase para tags con contador de juegos
-    public static class TagWithGameCount {
-        public Tag tag;
-        public int gameCount;
-
-        public TagWithGameCount(Tag tag, int gameCount) {
-            this.tag = tag;
-            this.gameCount = gameCount;
-        }
-    }
 }
-
-

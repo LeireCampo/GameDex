@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,8 +43,9 @@ public class CustomTagAdapter extends RecyclerView.Adapter<CustomTagAdapter.TagV
     @NonNull
     @Override
     public TagViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // CORRECCIÓN: Usar el layout correcto que ya existe
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_custom_tag_profile, parent, false);
+                .inflate(R.layout.item_custom_tag_selection, parent, false);
         return new TagViewHolder(view);
     }
 
@@ -55,17 +57,33 @@ public class CustomTagAdapter extends RecyclerView.Adapter<CustomTagAdapter.TagV
 
     @Override
     public int getItemCount() {
-        return tags.size();
+        return tags != null ? tags.size() : 0;
     }
 
     class TagViewHolder extends RecyclerView.ViewHolder {
         private final Chip chipTag;
         private final TextView textUsageCount;
+        private final CheckBox checkBox;
 
         public TagViewHolder(@NonNull View itemView) {
             super(itemView);
             chipTag = itemView.findViewById(R.id.chip_tag);
             textUsageCount = itemView.findViewById(R.id.text_usage_count);
+            checkBox = itemView.findViewById(R.id.checkbox_tag);
+
+            // CORRECCIÓN: Ocultar el checkbox ya que no lo necesitamos en el perfil
+            if (checkBox != null) {
+                checkBox.setVisibility(View.GONE);
+            }
+
+            // Ajustar las constraints del chip para que ocupe el espacio del checkbox
+            if (chipTag != null) {
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
+                        (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) chipTag.getLayoutParams();
+                params.startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID;
+                params.startToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET;
+                chipTag.setLayoutParams(params);
+            }
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {

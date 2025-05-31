@@ -181,7 +181,6 @@
     <!-- Tags y etiquetas -->
     <string name="my_tags">Mis Etiquetas</string>
     <string name="create_tag">Crear Etiqueta</string>
-    <string name="tag_name">Nombre de la etiqueta</string>
     <string name="tag_created">Etiqueta creada correctamente</string>
     <string name="tag_deleted">Etiqueta eliminada</string>
     <string name="delete_tag">Eliminar etiqueta</string>
@@ -204,6 +203,9 @@
     <string name="tag_already_exists">Ya existe una etiqueta con ese nombre</string>
     <string name="error_creating_tag">Error al crear la etiqueta</string>
     <string name="error_deleting_tag">Error al eliminar la etiqueta</string>
+
+    <!-- Para CustomTagAdapter -->
+    <string name="used_in_games">Usado en %1$d juegos</string>
 
 
 </resources>

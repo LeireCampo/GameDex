@@ -1,6 +1,7 @@
 package com.example.gamedex.data.local.entity;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -22,6 +23,19 @@ public class CustomTag {
     private long createdAt;
     private int usageCount; // Cuántos juegos tienen esta etiqueta
 
+    // Constructor principal que Room usará (todos los campos)
+    public CustomTag(int id, String name, String color, String userId, boolean isDefault, long createdAt, int usageCount) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.userId = userId;
+        this.isDefault = isDefault;
+        this.createdAt = createdAt;
+        this.usageCount = usageCount;
+    }
+
+    // Constructor conveniente para crear nuevas etiquetas - IGNORADO por Room
+    @Ignore
     public CustomTag(String name, String color) {
         this.name = name;
         this.color = color;
@@ -30,7 +44,8 @@ public class CustomTag {
         this.isDefault = false;
     }
 
-    // Constructor para etiquetas predefinidas
+    // Constructor para etiquetas predefinidas - IGNORADO por Room
+    @Ignore
     public CustomTag(String name, String color, boolean isDefault) {
         this.name = name;
         this.color = color;

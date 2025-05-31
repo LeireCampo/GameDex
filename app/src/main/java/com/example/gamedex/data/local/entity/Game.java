@@ -201,7 +201,7 @@ public class Game {
         game.setCoverUrl(response.getBackgroundImage());
         game.setReleaseDate(response.getReleaseDate());
         game.setGlobalRating(response.getRating());
-        game.setRatingsCount(response.getRatingsCount()); // AÑADIR ESTA LÍNEA
+
 
         // ... resto del código existente ...
 
@@ -218,7 +218,6 @@ public class Game {
         // ... código existente ...
 
         game.setGlobalRating(response.getRating());
-        game.setRatingsCount(response.getRatingsCount()); // AÑADIR ESTA LÍNEA
         game.setDescription(response.getDescription());
 
         // ... resto del código existente ...
