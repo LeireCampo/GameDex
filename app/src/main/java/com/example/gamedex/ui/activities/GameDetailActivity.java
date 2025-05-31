@@ -3,6 +3,7 @@ package com.example.gamedex.ui.activities;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -34,6 +35,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.gamedex.R;
+import com.example.gamedex.data.local.entity.CustomTag;
 import com.example.gamedex.data.local.entity.Game;
 import com.example.gamedex.data.local.entity.Tag;
 import com.example.gamedex.data.model.Store;
@@ -43,7 +45,9 @@ import com.example.gamedex.data.repository.TagRepository;
 import com.example.gamedex.ui.adapters.FullScreenImageAdapter;
 import com.example.gamedex.ui.adapters.ScreenshotAdapter;
 import com.example.gamedex.ui.adapters.StoreAdapter;
+import com.example.gamedex.ui.dialogs.TagSelectionDialogFragment;
 import com.example.gamedex.ui.viewmodels.GameDetailViewModel;
+import com.example.gamedex.ui.viewmodels.ProfileTagsViewModel;
 import com.example.gamedex.util.NetworkUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
@@ -107,6 +111,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
     private TextView textScreenshotCounter;
 
     private GameDetailViewModel viewModel;
+    private ProfileTagsViewModel profileTagsViewModel; // NUEVO
     private String gameId;
     private boolean isGameInLibrary = false;
 
@@ -137,6 +142,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         }
 
         viewModel = new ViewModelProvider(this).get(GameDetailViewModel.class);
+        profileTagsViewModel = new ViewModelProvider(this).get(ProfileTagsViewModel.class); // NUEVO
         viewModel.init(getApplication(), gameId);
 
         setupObservers();
@@ -262,6 +268,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
             }
         });
     }
+
     private void setupClickListeners() {
         buttonAddToLibrary.setOnClickListener(v -> {
             viewModel.toggleInLibrary();
@@ -365,53 +372,6 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                     game.getPublisher() : getString(R.string.unknown_developer));
         }
 
-        // Actualizar calificación del usuario
-        if (ratingBar != null) {
-            if (game.getUserRating() != null) {
-                ratingBar.setRating(game.getUserRating());
-                textRatingValue.setText(String.format("%.1f", game.getUserRating()));
-            } else {
-                ratingBar.setRating(0f);
-                textRatingValue.setText("0.0");
-            }
-        }
-
-        // Actualizar calificación global
-        if (ratingBarGlobal != null && textGlobalRating != null) {
-            if (game.getGlobalRating() != null) {
-                ratingBarGlobal.setRating(game.getGlobalRating());
-                textGlobalRating.setText(String.format("%.1f", game.getGlobalRating()));
-            } else {
-                ratingBarGlobal.setRating(0f);
-                textGlobalRating.setText("N/A");
-            }
-        }
-        if (ratingBarGlobal != null && textGlobalRating != null) {
-            if (game.getGlobalRating() != null && game.getGlobalRating() > 0) {
-                ratingBarGlobal.setRating(game.getGlobalRating());
-                textGlobalRating.setText(String.format("%.1f", game.getGlobalRating()));
-                ratingBarGlobal.setVisibility(View.VISIBLE);
-            } else {
-                // Sin valoraciones - mostrar mensaje
-                ratingBarGlobal.setVisibility(View.GONE);
-                textGlobalRating.setText("De momento no tiene valoraciones");
-                textGlobalRating.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            }
-        }
-
-        // MODIFICACIÓN: Valoración del usuario
-        if (ratingBar != null && textRatingValue != null) {
-            if (game.getUserRating() != null && game.getUserRating() > 0) {
-                ratingBar.setRating(game.getUserRating());
-                textRatingValue.setText(String.format("%.1f", game.getUserRating()));
-                ratingBar.setVisibility(View.VISIBLE);
-            } else {
-                ratingBar.setRating(0f);
-                textRatingValue.setText("Sin valorar");
-                textRatingValue.setTextColor(ContextCompat.getColor(this, R.color.text_hint));
-            }
-        }
-
         updateRatingsDisplay(game);
         // Actualizar estado de biblioteca
         updateLibraryStatus(game.isInLibrary(), game.getStatus());
@@ -492,8 +452,120 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         }
     }
 
-    // Métodos para trailer/video
-// Métodos para trailer/video - CORREGIDO
+    // MÉTODO ACTUALIZADO para gestionar tags personalizados
+    private void updateTagsChips(List<Tag> tags) {
+        chipGroupTags.removeAllViews();
+
+        // Obtener y mostrar etiquetas personalizadas
+        profileTagsViewModel.getTagsForGame(gameId).observe(this, customTags -> {
+            chipGroupTags.removeAllViews(); // Limpiar antes de añadir
+
+            // Añadir chips para etiquetas personalizadas existentes
+            if (customTags != null && !customTags.isEmpty()) {
+                for (CustomTag customTag : customTags) {
+                    Chip chip = new Chip(this);
+                    chip.setText(customTag.getName());
+                    chip.setCloseIcon(getDrawable(R.drawable.ic_close));
+                    chip.setCloseIconVisible(true);
+
+                    // Configurar color de la etiqueta
+                    try {
+                        int color = Color.parseColor(customTag.getColor());
+                        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(color));
+                        chip.setTextColor(getContrastColor(color));
+                    } catch (Exception e) {
+                        chip.setChipBackgroundColorResource(R.color.primary_green);
+                        chip.setTextColor(ContextCompat.getColor(this, R.color.background_black));
+                    }
+
+                    chip.setOnCloseIconClickListener(v -> {
+                        profileTagsViewModel.removeTagFromGame(gameId, customTag.getId());
+                        Snackbar.make(contentLayout, "Etiqueta '" + customTag.getName() + "' eliminada",
+                                Snackbar.LENGTH_SHORT).show();
+                    });
+
+                    chipGroupTags.addView(chip);
+                }
+            }
+
+            // Añadir chips para etiquetas del sistema (Tag) si las hay
+            if (tags != null && !tags.isEmpty()) {
+                for (Tag tag : tags) {
+                    Chip chip = new Chip(this);
+                    chip.setText(tag.getName());
+                    chip.setCloseIcon(getDrawable(R.drawable.ic_close));
+                    chip.setCloseIconVisible(true);
+                    chip.setChipBackgroundColorResource(R.color.accent_blue);
+                    chip.setTextColor(ContextCompat.getColor(this, R.color.white));
+                    chip.setOnCloseIconClickListener(v -> {
+                        viewModel.removeTagFromGame(tag.getId());
+                        Snackbar.make(contentLayout, getString(R.string.tag_removed), Snackbar.LENGTH_SHORT).show();
+                    });
+                    chipGroupTags.addView(chip);
+                }
+            }
+
+            // Si no hay etiquetas, mostrar mensaje
+            if ((customTags == null || customTags.isEmpty()) && (tags == null || tags.isEmpty())) {
+                Chip noTagsChip = new Chip(this);
+                noTagsChip.setText(R.string.no_tags);
+                noTagsChip.setClickable(false);
+                noTagsChip.setChipBackgroundColorResource(android.R.color.transparent);
+                noTagsChip.setChipStrokeColorResource(R.color.border_color);
+                noTagsChip.setChipStrokeWidth(2f);
+                noTagsChip.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+                chipGroupTags.addView(noTagsChip);
+            }
+
+            // SIEMPRE añadir el chip "Añadir etiqueta" al final
+            Chip addChip = new Chip(this);
+            addChip.setText(getString(R.string.add_tag));
+            addChip.setChipIcon(ContextCompat.getDrawable(this, R.drawable.ic_add));
+            addChip.setChipBackgroundColorResource(android.R.color.transparent);
+            addChip.setChipStrokeColorResource(R.color.neon_blue);
+            addChip.setChipStrokeWidth(2f);
+            addChip.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
+            addChip.setChipIconTintResource(R.color.neon_blue);
+            addChip.setOnClickListener(v -> showTagSelectionDialog());
+            chipGroupTags.addView(addChip);
+        });
+    }
+
+    // NUEVO método para mostrar el diálogo de selección de etiquetas
+    private void showTagSelectionDialog() {
+        TagSelectionDialogFragment dialog = TagSelectionDialogFragment.newInstance(gameId);
+        dialog.setOnTagsSelectedListener(new TagSelectionDialogFragment.OnTagsSelectedListener() {
+            @Override
+            public void onTagsSelected(List<CustomTag> selectedTags, List<CustomTag> tagsToRemove) {
+                // Mostrar mensaje de confirmación
+                int addedCount = selectedTags.size();
+                int removedCount = tagsToRemove.size();
+
+                String message = "";
+                if (addedCount > 0 && removedCount > 0) {
+                    message = addedCount + " etiquetas añadidas, " + removedCount + " eliminadas";
+                } else if (addedCount > 0) {
+                    message = addedCount + " etiqueta" + (addedCount == 1 ? " añadida" : "s añadidas");
+                } else if (removedCount > 0) {
+                    message = removedCount + " etiqueta" + (removedCount == 1 ? " eliminada" : "s eliminadas");
+                } else {
+                    message = "Sin cambios";
+                }
+
+                Snackbar.make(contentLayout, message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+        dialog.show(getSupportFragmentManager(), "tag_selection");
+    }
+
+    // NUEVO método auxiliar para calcular color de contraste
+    private int getContrastColor(int color) {
+        // Calcular luminancia para determinar si usar texto blanco o negro
+        double luminance = (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+        return luminance > 0.5 ? Color.BLACK : Color.WHITE;
+    }
+
+    // Métodos para trailer/video - CORREGIDO
     private void setupTrailer(Game game) {
         if (game.getTrailerUrl() != null && !game.getTrailerUrl().isEmpty()) {
             cardTrailer.setVisibility(View.VISIBLE);
@@ -664,7 +736,6 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         }
     }
 
-
     private void setupStoresFromGame(Game game) {
         if (recyclerStores == null) return;
 
@@ -725,56 +796,6 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
             storeAdapter.updateStores(stores);
             Log.d(TAG, "StoreAdapter actualizado con " + stores.size() + " tiendas");
         }
-    }
-
-    // Métodos para tags
-    // Reemplazar el método updateTagsChips() en GameDetailActivity.java
-
-    private void updateTagsChips(List<Tag> tags) {
-        chipGroupTags.removeAllViews();
-
-        // Añadir chips para tags existentes
-        if (tags != null && !tags.isEmpty()) {
-            for (Tag tag : tags) {
-                Chip chip = new Chip(this);
-                chip.setText(tag.getName());
-                chip.setCloseIcon(getDrawable(R.drawable.ic_close));
-                chip.setCloseIconVisible(true);
-                chip.setChipBackgroundColorResource(R.color.primary_green);
-                chip.setTextColor(ContextCompat.getColor(this, R.color.background_black));
-                chip.setOnCloseIconClickListener(v -> {
-                    viewModel.removeTagFromGame(tag.getId());
-                    Snackbar.make(contentLayout, getString(R.string.tag_removed), Snackbar.LENGTH_SHORT).show();
-                });
-                chipGroupTags.addView(chip);
-            }
-        } else {
-            // Si no hay tags, mostrar mensaje
-            Chip noTagsChip = new Chip(this);
-            noTagsChip.setText(R.string.no_tags);
-            noTagsChip.setClickable(false);
-            noTagsChip.setChipBackgroundColorResource(android.R.color.transparent);
-            noTagsChip.setChipStrokeColorResource(R.color.border_color);
-            noTagsChip.setChipStrokeWidth(2f);
-            noTagsChip.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-            chipGroupTags.addView(noTagsChip);
-        }
-
-        // IMPORTANTE: Siempre añadir el chip "Añadir etiqueta" al final
-        Chip addChip = new Chip(this);
-        addChip.setText(getString(R.string.add_tag));
-        addChip.setChipIcon(ContextCompat.getDrawable(this, R.drawable.ic_add));
-        addChip.setChipBackgroundColorResource(android.R.color.transparent);
-        addChip.setChipStrokeColorResource(R.color.neon_blue);
-        addChip.setChipStrokeWidth(2f);
-        addChip.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
-        addChip.setChipIconTintResource(R.color.neon_blue);
-        addChip.setOnClickListener(v -> showAddTagDialog());
-        chipGroupTags.addView(addChip);
-    }
-
-    private void showAddTagDialog() {
-        showCreateNewTagDialog();
     }
 
     @Override
@@ -883,100 +904,4 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
             }
         }
     }
-
-    private void createPersonalTag(String tagName) {
-        // Usar un ExecutorService local para esta operación
-        ExecutorService localExecutor = Executors.newSingleThreadExecutor();
-
-        localExecutor.execute(() -> {
-            try {
-                TagRepository tagRepository = new TagRepository(getApplication());
-
-                // Verificar si ya existe
-                if (tagRepository.checkTagExists(tagName) > 0) {
-                    runOnUiThread(() -> {
-                        Snackbar.make(contentLayout, "Ya existe una etiqueta con ese nombre",
-                                Snackbar.LENGTH_SHORT).show();
-                    });
-                    return;
-                }
-
-                // Crear nueva etiqueta con color aleatorio
-                String[] colors = {"#FF5722", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5",
-                        "#2196F3", "#03A9F4", "#00BCD4", "#009688", "#4CAF50",
-                        "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800"};
-                String randomColor = colors[(int) (Math.random() * colors.length)];
-
-                Tag newTag = new Tag(tagName, randomColor);
-                newTag.setSystemTag(false); // Marcar como etiqueta personal
-
-                long tagId = tagRepository.insertTagAndGetId(newTag);
-
-                // Asociar al juego actual
-                tagRepository.addTagToGame(gameId, (int) tagId);
-
-                runOnUiThread(() -> {
-                    Snackbar.make(contentLayout, "Etiqueta '" + tagName + "' creada y añadida",
-                            Snackbar.LENGTH_SHORT).show();
-                });
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error creando etiqueta personal: " + e.getMessage());
-                runOnUiThread(() -> {
-                    Snackbar.make(contentLayout, "Error al crear la etiqueta",
-                            Snackbar.LENGTH_SHORT).show();
-                });
-            } finally {
-                localExecutor.shutdown();
-            }
-        });
-    }
-
-    private void showCreateNewTagDialog() {
-        // Crear un EditText simple
-        final EditText editText = new EditText(this);
-        editText.setHint("Nombre de la etiqueta");
-        editText.setInputType(InputType.TYPE_CLASS_TEXT);
-        editText.setMaxLines(1);
-
-        // Aplicar padding al EditText
-        int padding = (int) (16 * getResources().getDisplayMetrics().density);
-        editText.setPadding(padding, padding, padding, padding);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Añadir Etiqueta Personal")
-                .setMessage("Escribe el nombre de la nueva etiqueta:")
-                .setView(editText)
-                .setPositiveButton("Crear", (dialogInterface, which) -> {
-                    String tagName = editText.getText().toString().trim();
-
-                    if (tagName.isEmpty()) {
-                        Toast.makeText(this, "El nombre no puede estar vacío", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (tagName.length() > 20) {
-                        Toast.makeText(this, "El nombre no puede superar los 20 caracteres", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    createPersonalTag(tagName);
-                })
-                .setNegativeButton("Cancelar", null)
-                .create();
-
-        dialog.show();
-
-        // Personalizar colores después de mostrar
-        Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-        if (positiveButton != null) {
-            positiveButton.setTextColor(ContextCompat.getColor(this, R.color.primary_green));
-        }
-        if (negativeButton != null) {
-            negativeButton.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-        }
-    }
-
 }

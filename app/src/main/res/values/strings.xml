@@ -184,7 +184,6 @@
     <string name="tag_created">Etiqueta creada correctamente</string>
     <string name="tag_deleted">Etiqueta eliminada</string>
     <string name="delete_tag">Eliminar etiqueta</string>
-    <string name="view_games_with_tag">Ver juegos con esta etiqueta</string>
     <string name="confirm_delete_tag">¿Eliminar esta etiqueta?</string>
     <string name="tag_has_games">Esta etiqueta tiene juegos asociados</string>
 
@@ -206,6 +205,17 @@
 
     <!-- Para CustomTagAdapter -->
     <string name="used_in_games">Usado en %1$d juegos</string>
+
+
+    <!-- Para CustomTagAdapter -->
+
+    <!-- Para gestión de tags en perfil -->
+    <string name="view_games_with_tag">Ver juegos con esta etiqueta</string>
+    <string name="delete_tag_option">Eliminar etiqueta</string>
+    <string name="confirm_delete_tag_title">Confirmar eliminación</string>
+    <string name="confirm_delete_tag_message">¿Eliminar la etiqueta \'%1$s\'?</string>
+    <string name="tag_will_be_removed_from_games">Esta etiqueta se eliminará de %1$d juego%2$s.</string>
+    <string name="tag_deleted_successfully">Etiqueta \'%1$s\' eliminada</string>
 
 
 </resources>
