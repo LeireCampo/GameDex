@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Estado seleccionado -->
+    <!-- Icono cuando está seleccionado -->
     <item android:color="@color/primary_green" android:state_checked="true" />
-    <!-- Estado normal -->
+    <item android:color="@color/primary_green" android:state_selected="true" />
+    <!-- Icono en estado normal -->
     <item android:color="@color/text_secondary" />
 </selector>

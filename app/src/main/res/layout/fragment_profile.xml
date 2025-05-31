@@ -290,6 +290,106 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- NUEVA SECCIÓN: Etiquetas personalizadas -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/tags_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="@color/neon_purple"
+            android:backgroundTint="@color/dark_surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Título de la sección -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/my_tags"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="@color/neon_purple"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_tags_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_rounded_counter"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="4dp"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/neon_purple"
+                        android:textStyle="bold"
+                        android:text="0 tags" />
+                </LinearLayout>
+
+                <!-- RecyclerView para las etiquetas -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_user_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_profile_tag" />
+
+                <!-- Estado vacío para tags -->
+                <LinearLayout
+                    android:id="@+id/empty_tags_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_tag"
+                        android:alpha="0.5"
+                        app:tint="@color/neon_purple"
+                        android:contentDescription="@string/ic_tag" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="Sin etiquetas personalizadas"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/text_secondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:text="Crea etiquetas para organizar tus juegos"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Juegos favoritos -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/favorite_games_card"

@@ -17,10 +17,10 @@ import com.example.gamedex.data.local.entity.CustomTag;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 
 public class CustomTagSelectionAdapter extends RecyclerView.Adapter<CustomTagSelectionAdapter.TagViewHolder> {
 
@@ -36,6 +36,12 @@ public class CustomTagSelectionAdapter extends RecyclerView.Adapter<CustomTagSel
 
     public void updateTags(List<CustomTag> newTags, List<Integer> selectedIds) {
         this.tags = newTags;
+        this.selectedTagIds = new HashSet<>(selectedIds);
+        notifyDataSetChanged();
+    }
+
+    // MÉTODO AÑADIDO: setSelectedTagIds
+    public void setSelectedTagIds(List<Integer> selectedIds) {
         this.selectedTagIds = new HashSet<>(selectedIds);
         notifyDataSetChanged();
     }
