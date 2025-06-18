@@ -18,10 +18,10 @@ import com.example.gamedex.data.remote.RAWGApiService;
 import com.example.gamedex.data.remote.RAWGRetrofitClient;
 import com.example.gamedex.data.remote.model.GameDetailResponse;
 import com.example.gamedex.data.remote.model.GameListResponse;
-import com.example.gamedex.data.remote.model.GameResponse;
 import com.example.gamedex.data.remote.model.ScreenshotListResponse;
 import com.example.gamedex.data.remote.model.StoreListResponse;
 import com.example.gamedex.data.remote.model.VideoListResponse;
+import com.example.gamedex.data.model.GameWithTags;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,6 +75,10 @@ public class GameRepository {
     }
 
     // === MÉTODOS LOCALES CON FIREBASE ===
+
+    public LiveData<GameWithTags> getGameWithTags(String gameId) {
+        return gameDao.getGameWithTags(gameId);
+    }
 
     public LiveData<List<Game>> getAllLibraryGames() {
         try {
@@ -180,10 +184,6 @@ public class GameRepository {
     }
 
     // === MÉTODOS LOCALES EXISTENTES ===
-
-    public LiveData<GameWithTags> getGameWithTags(String gameId) {
-        return gameDao.getGameWithTags(gameId);
-    }
 
     public Game getGameById(String gameId) {
         return gameDao.getGameById(gameId);

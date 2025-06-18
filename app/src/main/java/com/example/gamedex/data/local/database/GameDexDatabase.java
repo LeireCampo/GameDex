@@ -11,31 +11,25 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.gamedex.data.local.dao.CustomTagDao;
 import com.example.gamedex.data.local.dao.GameDao;
-import com.example.gamedex.data.local.dao.TagDao;
 import com.example.gamedex.data.local.dao.UserDao;
 import com.example.gamedex.data.local.entity.CustomTag;
 import com.example.gamedex.data.local.entity.Game;
 import com.example.gamedex.data.local.entity.GameCustomTagCrossRef;
-import com.example.gamedex.data.local.entity.GameTagCrossRef;
-import com.example.gamedex.data.local.entity.Tag;
 import com.example.gamedex.data.local.entity.User;
 
 @Database(
         entities = {
                 Game.class,
-                Tag.class,
-                GameTagCrossRef.class,
                 User.class,
                 CustomTag.class,
                 GameCustomTagCrossRef.class
         },
-        version = 6, // Incrementar para incluir las nuevas entidades
+        version = 7, // Incrementar versión para reflejar los cambios
         exportSchema = false
 )
 public abstract class GameDexDatabase extends RoomDatabase {
 
     public abstract GameDao gameDao();
-    public abstract TagDao tagDao();
     public abstract UserDao userDao();
     public abstract CustomTagDao customTagDao();
 
@@ -52,16 +46,6 @@ public abstract class GameDexDatabase extends RoomDatabase {
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_lastUpdated` ON `games` (`lastUpdated`)");
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_isInLibrary_status` ON `games` (`isInLibrary`, `status`)");
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_games_isInLibrary_lastUpdated` ON `games` (`isInLibrary`, `lastUpdated`)");
-
-            // Crear índices para Tag
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_name` ON `tags` (`name`)");
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_isSystemTag` ON `tags` (`isSystemTag`)");
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_tags_createdAt` ON `tags` (`createdAt`)");
-
-            // Crear índices para GameTagCrossRef
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_game_tag_cross_ref_gameId` ON `game_tag_cross_ref` (`gameId`)");
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_game_tag_cross_ref_tagId` ON `game_tag_cross_ref` (`tagId`)");
-            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_game_tag_cross_ref_gameId_tagId` ON `game_tag_cross_ref` (`gameId`, `tagId`)");
         }
     };
 
@@ -74,6 +58,18 @@ public abstract class GameDexDatabase extends RoomDatabase {
         }
     };
 
+    // Migración de versión 6 a 7 (limpiar sistema Tag viejo)
+    static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Eliminar tablas del sistema Tag viejo si existen
+            database.execSQL("DROP TABLE IF EXISTS `game_tag_cross_ref`");
+            database.execSQL("DROP TABLE IF EXISTS `tags`");
+
+            // Las tablas CustomTag ya existen, no necesitamos crearlas
+        }
+    };
+
     public static GameDexDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (GameDexDatabase.class) {
@@ -82,7 +78,7 @@ public abstract class GameDexDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     GameDexDatabase.class,
                                     "gamedex_database")
-                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4) // Solo las migraciones necesarias
+                            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_6_7)
                             .fallbackToDestructiveMigration() // Fallback si falla la migración
                             .build();
                 }

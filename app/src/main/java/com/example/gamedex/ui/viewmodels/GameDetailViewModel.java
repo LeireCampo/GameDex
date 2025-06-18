@@ -12,7 +12,7 @@ import com.example.gamedex.data.remote.model.ScreenshotListResponse;
 import com.example.gamedex.data.remote.model.StoreListResponse;
 import com.example.gamedex.data.remote.model.VideoListResponse;
 import com.example.gamedex.data.repository.GameRepository;
-import com.example.gamedex.data.repository.TagRepository;
+import com.example.gamedex.data.repository.CustomTagRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 public class GameDetailViewModel extends ViewModel {
 
     private GameRepository gameRepository;
-    private TagRepository tagRepository;
+    private CustomTagRepository customTagRepository;
     private LiveData<GameWithTags> gameWithTags;
     private LiveData<Game> gameDetails;
     private LiveData<List<ScreenshotListResponse.Screenshot>> screenshots;
@@ -38,7 +38,7 @@ public class GameDetailViewModel extends ViewModel {
 
         this.gameId = gameId;
         this.gameRepository = new GameRepository(application);
-        this.tagRepository = new TagRepository(application);
+        this.customTagRepository = new CustomTagRepository(application);
 
         // Cargar datos básicos del juego local
         this.gameWithTags = gameRepository.getGameWithTags(gameId);
@@ -109,15 +109,15 @@ public class GameDetailViewModel extends ViewModel {
         });
     }
 
-    public void addTagToGame(int tagId) {
+    public void addTagToGame(int customTagId) {
         executorService.execute(() -> {
-            tagRepository.addTagToGame(gameId, tagId);
+            customTagRepository.addTagToGame(gameId, customTagId);
         });
     }
 
-    public void removeTagFromGame(int tagId) {
+    public void removeTagFromGame(int customTagId) {
         executorService.execute(() -> {
-            tagRepository.removeTagFromGame(gameId, tagId);
+            customTagRepository.removeTagFromGame(gameId, customTagId);
         });
     }
 
@@ -126,7 +126,4 @@ public class GameDetailViewModel extends ViewModel {
         super.onCleared();
         executorService.shutdown();
     }
-    // Simplificar los observables para videos ya que RAWG no los tiene
-
-
 }

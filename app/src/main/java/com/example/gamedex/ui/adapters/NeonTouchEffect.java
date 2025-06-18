@@ -38,12 +38,5 @@ public class NeonTouchEffect implements View.OnTouchListener {
         return false;
     }
 
-    /**
-     * Aplicar el efecto táctil a una vista
-     * @param view Vista a la que aplicar el efecto
-     * @param context Contexto de la aplicación
-     */
-    public static void apply(View view, Context context) {
-        view.setOnTouchListener(new NeonTouchEffect(context));
-    }
+
 }

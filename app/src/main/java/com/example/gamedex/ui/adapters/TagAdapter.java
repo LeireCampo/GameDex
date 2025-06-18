@@ -1,85 +1,100 @@
 package com.example.gamedex.ui.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamedex.R;
-import com.google.android.material.chip.Chip;
+import com.example.gamedex.data.local.entity.Tag;
+import com.example.gamedex.ui.activities.GamesByTagActivity;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class TagAdapter extends RecyclerView.Adapter<TagAdapter.TagViewHolder> {
 
     private final Context context;
-    private Map<String, Integer> tagStats;
+    private List<Tag> tags;
+    private Map<Integer, Integer> tagGameCounts; // tagId -> game count
     private final OnTagClickListener listener;
 
     public interface OnTagClickListener {
-        void onTagClick(String tagName, int gameCount);
+        void onTagClick(Tag tag, int gameCount);
     }
 
-    public TagAdapter(Context context, List<String> tags, OnTagClickListener listener) {
+    public TagAdapter(Context context, OnTagClickListener listener) {
         this.context = context;
-        this.tagStats = new HashMap<>();
+        this.tags = new ArrayList<>();
         this.listener = listener;
     }
 
-    public void updateTags(Map<String, Integer> newTagStats) {
-        this.tagStats = newTagStats != null ? newTagStats : new HashMap<>();
+    public void updateTags(List<Tag> newTags, Map<Integer, Integer> gameCounts) {
+        this.tags = newTags != null ? newTags : new ArrayList<>();
+        this.tagGameCounts = gameCounts;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public TagViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_tag, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_profile_tag, parent, false);
         return new TagViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TagViewHolder holder, int position) {
-        String tagName = (String) tagStats.keySet().toArray()[position];
-        int gameCount = tagStats.get(tagName);
-        holder.bind(tagName, gameCount);
+        Tag tag = tags.get(position);
+        int gameCount = tagGameCounts != null ? tagGameCounts.getOrDefault(tag.getId(), 0) : 0;
+        holder.bind(tag, gameCount);
     }
 
     @Override
     public int getItemCount() {
-        return tagStats.size();
+        return tags.size();
     }
 
     class TagViewHolder extends RecyclerView.ViewHolder {
-        private final Chip chipTag;
+        private final ImageView imageTagIcon;
+        private final TextView textTagName;
         private final TextView textGameCount;
+        private final ImageView imageChevron;
 
         public TagViewHolder(@NonNull View itemView) {
             super(itemView);
-            chipTag = itemView.findViewById(R.id.chip_tag);
+            imageTagIcon = itemView.findViewById(R.id.image_tag_icon);
+            textTagName = itemView.findViewById(R.id.text_tag_name);
             textGameCount = itemView.findViewById(R.id.text_game_count);
+            imageChevron = itemView.findViewById(R.id.image_chevron);
 
             itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        String tagName = (String) tagStats.keySet().toArray()[position];
-                        int gameCount = tagStats.get(tagName);
-                        listener.onTagClick(tagName, gameCount);
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && position < tags.size()) {
+                    Tag tag = tags.get(position);
+                    int gameCount = tagGameCounts != null ? tagGameCounts.getOrDefault(tag.getId(), 0) : 0;
+
+                    // Llamar al listener
+                    if (listener != null) {
+                        listener.onTagClick(tag, gameCount);
                     }
+
+                    // Navegar directamente a GamesByTagActivity
+                    Intent intent = GamesByTagActivity.newIntent(context, tag.getName(), tag.getId());
+                    context.startActivity(intent);
                 }
             });
         }
 
-        void bind(String tagName, int gameCount) {
-            chipTag.setText(tagName);
-            textGameCount.setText(gameCount + " juegos");
+        void bind(Tag tag, int gameCount) {
+            textTagName.setText(tag.getName());
+            textGameCount.setText(String.valueOf(gameCount));
         }
     }
 }

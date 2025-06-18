@@ -15,6 +15,16 @@
         android:background="@drawable/gradient_splash_bg" />
 
     <!-- Logo principal de GameDex -->
+    <View
+        android:id="@+id/view"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/image_logo"
         android:layout_width="200dp"
@@ -22,7 +32,7 @@
         android:contentDescription="@string/app_name"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
-        android:src="@drawable/logosinfondo"
+        android:src="@drawable/sinfondo"
         app:layout_constraintBottom_toTopOf="@+id/text_app_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -117,6 +127,9 @@
         app:layout_constraintTop_toBottomOf="@+id/text_loading" />
 
     <!-- Partículas decorativas neón -->
+    <!-- Partículas Neón Aleatorias para GameDex -->
+
+    <!-- Partícula 1 - Azul -->
     <View
         android:layout_width="8dp"
         android:layout_height="8dp"
@@ -126,6 +139,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Partícula 2 - Rosa -->
     <View
         android:layout_width="6dp"
         android:layout_height="6dp"
@@ -135,6 +149,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Partícula 3 - Púrpura -->
     <View
         android:layout_width="4dp"
         android:layout_height="4dp"
@@ -144,6 +159,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Partícula 4 - Azul Grande -->
     <View
         android:layout_width="10dp"
         android:layout_height="10dp"
@@ -152,5 +168,183 @@
         android:background="@drawable/particle_neon_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Partícula 5 - Verde -->
+    <View
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="45dp"
+        android:background="@drawable/particle_neon_pink"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Partícula 6 - Azul Cian -->
+    <View
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginTop="200dp"
+        android:background="@drawable/particle_neon_purple"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!-- Partícula 8 - Verde Brillante -->
+    <View
+        android:layout_width="9dp"
+        android:layout_height="9dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/particle_neon_pink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Partícula 9 - Púrpura Centro -->
+
+    <!-- Partícula 10 - Azul Derecha -->
+    <View
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Partícula 11 - Cyan Izquierda -->
+    <View
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="250dp"
+        android:background="@drawable/particle_neon_purple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Partícula 12 - Verde Abajo -->
+    <View
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginEnd="120dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Partícula 13 - Rosa Centro -->
+
+    <!-- Partícula 14 - Azul Pequeña -->
+    <View
+        android:layout_width="3dp"
+        android:layout_height="3dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginTop="180dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    <!-- Partícula 16 - Cyan Arriba -->
+
+    <View
+        android:layout_width="11dp"
+        android:layout_height="11dp"
+        android:layout_marginStart="356dp"
+        android:layout_marginBottom="384dp"
+        android:background="@drawable/particle_neon_purple"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_marginStart="220dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Partícula 17 - Verde Derecha -->
+    <View
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="120dp"
+        android:background="@drawable/particle_neon_pink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Partícula 18 - Rosa Esquina -->
+    <View
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/particle_neon_pink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Partícula 19 - Azul Centro Alto -->
+    <View
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Partícula 20 - Púrpura Izquierda -->
+    <View
+        android:layout_width="9dp"
+        android:layout_height="9dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="320dp"
+        android:background="@drawable/particle_neon_purple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!-- Partícula 22 - Verde Micro -->
+    <View
+        android:layout_width="2dp"
+        android:layout_height="2dp"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="90dp"
+        android:background="@drawable/particle_neon_purple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Partícula 23 - Rosa Flotante -->
+    <View
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="180dp"
+        android:background="@drawable/particle_neon_pink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Partícula 24 - Azul Esquina -->
+    <View
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_marginEnd="200dp"
+        android:layout_marginBottom="90dp"
+        android:background="@drawable/particle_neon_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Partícula 25 - Púrpura Sutil -->
+    <View
+        android:layout_width="3dp"
+        android:layout_height="3dp"
+        android:layout_marginStart="300dp"
+        android:layout_marginBottom="160dp"
+        android:background="@drawable/particle_neon_purple"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

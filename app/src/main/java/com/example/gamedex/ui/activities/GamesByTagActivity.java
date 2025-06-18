@@ -1,8 +1,8 @@
-// Nuevo archivo: GamesByTagActivity.java
 package com.example.gamedex.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -25,6 +25,7 @@ public class GamesByTagActivity extends AppCompatActivity implements GameAdapter
 
     private static final String EXTRA_TAG_NAME = "tag_name";
     private static final String EXTRA_TAG_ID = "tag_id";
+    private static final String EXTRA_TAG_COLOR = "tag_color";
 
     private RecyclerView recyclerGames;
     private TextView textEmptyState;
@@ -35,11 +36,20 @@ public class GamesByTagActivity extends AppCompatActivity implements GameAdapter
 
     private String tagName;
     private int tagId;
+    private String tagColor;
 
     public static Intent newIntent(android.content.Context context, String tagName, int tagId) {
         Intent intent = new Intent(context, GamesByTagActivity.class);
         intent.putExtra(EXTRA_TAG_NAME, tagName);
         intent.putExtra(EXTRA_TAG_ID, tagId);
+        return intent;
+    }
+
+    public static Intent newIntent(android.content.Context context, String tagName, int tagId, String tagColor) {
+        Intent intent = new Intent(context, GamesByTagActivity.class);
+        intent.putExtra(EXTRA_TAG_NAME, tagName);
+        intent.putExtra(EXTRA_TAG_ID, tagId);
+        intent.putExtra(EXTRA_TAG_COLOR, tagColor);
         return intent;
     }
 
@@ -51,8 +61,12 @@ public class GamesByTagActivity extends AppCompatActivity implements GameAdapter
         // Obtener datos del intent
         tagName = getIntent().getStringExtra(EXTRA_TAG_NAME);
         tagId = getIntent().getIntExtra(EXTRA_TAG_ID, -1);
+        tagColor = getIntent().getStringExtra(EXTRA_TAG_COLOR);
+
+        Log.d("GamesByTagActivity", "Tag ID recibido: " + tagId + ", Tag Name: " + tagName);
 
         if (tagName == null || tagId == -1) {
+            Log.e("GamesByTagActivity", "Datos del tag inválidos");
             finish();
             return;
         }
@@ -89,7 +103,10 @@ public class GamesByTagActivity extends AppCompatActivity implements GameAdapter
         viewModel = new ViewModelProvider(this).get(GamesByTagViewModel.class);
         viewModel.init(tagId);
 
+        // Observar los juegos
         viewModel.getGamesByTag().observe(this, games -> {
+            Log.d("GamesByTagActivity", "Juegos recibidos: " + (games != null ? games.size() : 0));
+
             if (games != null) {
                 gameAdapter.updateGames(games);
 
@@ -101,9 +118,12 @@ public class GamesByTagActivity extends AppCompatActivity implements GameAdapter
                 if (games.isEmpty()) {
                     textEmptyState.setVisibility(View.VISIBLE);
                     recyclerGames.setVisibility(View.GONE);
+                    textEmptyState.setText("No hay juegos con la etiqueta \"" + tagName + "\"");
+                    Log.d("GamesByTagActivity", "No se encontraron juegos para el tag: " + tagName);
                 } else {
                     textEmptyState.setVisibility(View.GONE);
                     recyclerGames.setVisibility(View.VISIBLE);
+                    Log.d("GamesByTagActivity", "Mostrando " + count + " juegos");
                 }
             }
         });

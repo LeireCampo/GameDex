@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/my_library"
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/black" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -87,6 +87,7 @@
                     android:gravity="center"
                     android:text="@string/no_games_found"
                     android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                    android:textColor="@color/particle_blue"
                     android:textStyle="bold" />
 
                 <TextView
@@ -95,6 +96,7 @@
                     android:layout_marginTop="8dp"
                     android:gravity="center"
                     android:text="@string/add_your_first_game"
+                    android:textColor="@color/particle_blue"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                 <Button

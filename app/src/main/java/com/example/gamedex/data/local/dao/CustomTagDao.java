@@ -6,9 +6,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RewriteQueriesToDropUnusedColumns;
 import androidx.room.Update;
 
 import com.example.gamedex.data.local.entity.CustomTag;
+import com.example.gamedex.data.local.entity.Game;
 
 import java.util.List;
 
@@ -82,6 +84,13 @@ public interface CustomTagDao {
     @Query("DELETE FROM game_custom_tag_cross_ref WHERE gameId = :gameId AND customTagId = :customTagId")
     void removeTagFromGameById(String gameId, int customTagId);
 
+    // MÉTODO CORREGIDO: Añadida anotación @RewriteQueriesToDropUnusedColumns
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM custom_tags INNER JOIN game_custom_tag_cross_ref ON custom_tags.id = game_custom_tag_cross_ref.customTagId WHERE game_custom_tag_cross_ref.gameId = :gameId")
     LiveData<List<CustomTag>> getTagsForGame(String gameId);
+
+    @Query("SELECT games.* FROM games " +
+            "INNER JOIN game_custom_tag_cross_ref ON games.id = game_custom_tag_cross_ref.gameId " +
+            "WHERE game_custom_tag_cross_ref.customTagId = :customTagId")
+    LiveData<List<Game>> getGamesByCustomTag(int customTagId);
 }

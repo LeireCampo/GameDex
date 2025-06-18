@@ -1,21 +1,17 @@
 package com.example.gamedex.ui.activities;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -23,7 +19,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -37,11 +32,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.gamedex.R;
 import com.example.gamedex.data.local.entity.CustomTag;
 import com.example.gamedex.data.local.entity.Game;
-import com.example.gamedex.data.local.entity.Tag;
 import com.example.gamedex.data.model.Store;
 import com.example.gamedex.data.remote.model.ScreenshotListResponse;
 import com.example.gamedex.data.remote.model.StoreListResponse;
-import com.example.gamedex.data.repository.TagRepository;
 import com.example.gamedex.ui.adapters.FullScreenImageAdapter;
 import com.example.gamedex.ui.adapters.ScreenshotAdapter;
 import com.example.gamedex.ui.adapters.StoreAdapter;
@@ -60,8 +53,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class GameDetailActivity extends AppCompatActivity implements ScreenshotAdapter.OnScreenshotClickListener {
@@ -212,7 +203,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                 Game game = gameWithTags.game;
                 isGameInLibrary = game.isInLibrary();
                 updateUI(game);
-                updateTagsChips(gameWithTags.tags);
+                // NO llamar updateTagsChips aquí para evitar duplicación
 
                 // CORRECCIÓN: Configurar multimedia desde datos locales primero
                 setupTrailer(game);
@@ -220,6 +211,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                 setupScreenshotsFromGame(game);
             }
         });
+        profileTagsViewModel.getTagsForGame(gameId).observe(this, this::updateTagsDisplay);
 
         // Observar datos actualizados de la API
         viewModel.getGameDetails().observe(this, game -> {
@@ -269,6 +261,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         });
     }
 
+
     private void setupClickListeners() {
         buttonAddToLibrary.setOnClickListener(v -> {
             viewModel.toggleInLibrary();
@@ -292,6 +285,63 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
                     fullscreenContainer.setVisibility(View.GONE));
         }
     }
+
+    private void updateTagsDisplay(List<CustomTag> customTags) {
+        chipGroupTags.removeAllViews(); // Limpiar antes de añadir
+
+        // Añadir chips para etiquetas personalizadas existentes
+        if (customTags != null && !customTags.isEmpty()) {
+            for (CustomTag customTag : customTags) {
+                Chip chip = new Chip(this);
+                chip.setText(customTag.getName());
+                chip.setCloseIcon(getDrawable(R.drawable.ic_close));
+                chip.setCloseIconVisible(true);
+
+                // Configurar color de la etiqueta
+                try {
+                    int color = Color.parseColor(customTag.getColor());
+                    chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(color));
+                    chip.setTextColor(getContrastColor(color));
+                } catch (Exception e) {
+                    chip.setChipBackgroundColorResource(R.color.primary_green);
+                    chip.setTextColor(ContextCompat.getColor(this, R.color.background_black));
+                }
+
+                chip.setOnCloseIconClickListener(v -> {
+                    profileTagsViewModel.removeTagFromGame(gameId, customTag.getId());
+                    Snackbar.make(contentLayout, "Etiqueta '" + customTag.getName() + "' eliminada",
+                            Snackbar.LENGTH_SHORT).show();
+                });
+
+                chipGroupTags.addView(chip);
+            }
+        }
+
+        // Si no hay etiquetas, mostrar mensaje
+        if (customTags == null || customTags.isEmpty()) {
+            Chip noTagsChip = new Chip(this);
+            noTagsChip.setText(R.string.no_tags);
+            noTagsChip.setClickable(false);
+            noTagsChip.setChipBackgroundColorResource(android.R.color.transparent);
+            noTagsChip.setChipStrokeColorResource(R.color.border_color);
+            noTagsChip.setChipStrokeWidth(2f);
+            noTagsChip.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            chipGroupTags.addView(noTagsChip);
+        }
+
+        // SIEMPRE añadir el chip "Añadir etiqueta" al final
+        Chip addChip = new Chip(this);
+        addChip.setText(getString(R.string.add_tag));
+        addChip.setChipIcon(ContextCompat.getDrawable(this, R.drawable.ic_add));
+        addChip.setChipBackgroundColorResource(android.R.color.transparent);
+        addChip.setChipStrokeColorResource(R.color.neon_blue);
+        addChip.setChipStrokeWidth(2f);
+        addChip.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
+        addChip.setChipIconTintResource(R.color.neon_blue);
+        addChip.setOnClickListener(v -> showTagSelectionDialog());
+        chipGroupTags.addView(addChip);
+    }
+
 
     private void showStatusSelectionDialog() {
         String[] statuses = {"playing", "completed", "backlog", "wishlist"};
@@ -452,84 +502,7 @@ public class GameDetailActivity extends AppCompatActivity implements ScreenshotA
         }
     }
 
-    // MÉTODO ACTUALIZADO para gestionar tags personalizados
-    private void updateTagsChips(List<Tag> tags) {
-        chipGroupTags.removeAllViews();
 
-        // Obtener y mostrar etiquetas personalizadas
-        profileTagsViewModel.getTagsForGame(gameId).observe(this, customTags -> {
-            chipGroupTags.removeAllViews(); // Limpiar antes de añadir
-
-            // Añadir chips para etiquetas personalizadas existentes
-            if (customTags != null && !customTags.isEmpty()) {
-                for (CustomTag customTag : customTags) {
-                    Chip chip = new Chip(this);
-                    chip.setText(customTag.getName());
-                    chip.setCloseIcon(getDrawable(R.drawable.ic_close));
-                    chip.setCloseIconVisible(true);
-
-                    // Configurar color de la etiqueta
-                    try {
-                        int color = Color.parseColor(customTag.getColor());
-                        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(color));
-                        chip.setTextColor(getContrastColor(color));
-                    } catch (Exception e) {
-                        chip.setChipBackgroundColorResource(R.color.primary_green);
-                        chip.setTextColor(ContextCompat.getColor(this, R.color.background_black));
-                    }
-
-                    chip.setOnCloseIconClickListener(v -> {
-                        profileTagsViewModel.removeTagFromGame(gameId, customTag.getId());
-                        Snackbar.make(contentLayout, "Etiqueta '" + customTag.getName() + "' eliminada",
-                                Snackbar.LENGTH_SHORT).show();
-                    });
-
-                    chipGroupTags.addView(chip);
-                }
-            }
-
-            // Añadir chips para etiquetas del sistema (Tag) si las hay
-            if (tags != null && !tags.isEmpty()) {
-                for (Tag tag : tags) {
-                    Chip chip = new Chip(this);
-                    chip.setText(tag.getName());
-                    chip.setCloseIcon(getDrawable(R.drawable.ic_close));
-                    chip.setCloseIconVisible(true);
-                    chip.setChipBackgroundColorResource(R.color.accent_blue);
-                    chip.setTextColor(ContextCompat.getColor(this, R.color.white));
-                    chip.setOnCloseIconClickListener(v -> {
-                        viewModel.removeTagFromGame(tag.getId());
-                        Snackbar.make(contentLayout, getString(R.string.tag_removed), Snackbar.LENGTH_SHORT).show();
-                    });
-                    chipGroupTags.addView(chip);
-                }
-            }
-
-            // Si no hay etiquetas, mostrar mensaje
-            if ((customTags == null || customTags.isEmpty()) && (tags == null || tags.isEmpty())) {
-                Chip noTagsChip = new Chip(this);
-                noTagsChip.setText(R.string.no_tags);
-                noTagsChip.setClickable(false);
-                noTagsChip.setChipBackgroundColorResource(android.R.color.transparent);
-                noTagsChip.setChipStrokeColorResource(R.color.border_color);
-                noTagsChip.setChipStrokeWidth(2f);
-                noTagsChip.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
-                chipGroupTags.addView(noTagsChip);
-            }
-
-            // SIEMPRE añadir el chip "Añadir etiqueta" al final
-            Chip addChip = new Chip(this);
-            addChip.setText(getString(R.string.add_tag));
-            addChip.setChipIcon(ContextCompat.getDrawable(this, R.drawable.ic_add));
-            addChip.setChipBackgroundColorResource(android.R.color.transparent);
-            addChip.setChipStrokeColorResource(R.color.neon_blue);
-            addChip.setChipStrokeWidth(2f);
-            addChip.setTextColor(ContextCompat.getColor(this, R.color.neon_blue));
-            addChip.setChipIconTintResource(R.color.neon_blue);
-            addChip.setOnClickListener(v -> showTagSelectionDialog());
-            chipGroupTags.addView(addChip);
-        });
-    }
 
     // NUEVO método para mostrar el diálogo de selección de etiquetas
     private void showTagSelectionDialog() {

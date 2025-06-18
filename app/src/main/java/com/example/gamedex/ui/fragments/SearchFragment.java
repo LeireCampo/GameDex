@@ -1,5 +1,6 @@
 package com.example.gamedex.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -29,7 +31,9 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 public class SearchFragment extends Fragment implements GameAdapter.OnGameClickListener {
 
@@ -77,7 +81,7 @@ public class SearchFragment extends Fragment implements GameAdapter.OnGameClickL
         setupRecyclerView();
         setupSearchInput();
         setupFilters();
-        loadFilterData();
+        setupDropdowns(); // Nuevo método para configurar dropdowns
     }
 
     private void initViews(View view) {
@@ -126,38 +130,124 @@ public class SearchFragment extends Fragment implements GameAdapter.OnGameClickL
         buttonApplyFilters.setOnClickListener(v -> performSearch());
     }
 
-    private void loadFilterData() {
-        // Cargar plataformas
-        viewModel.getPlatforms().observe(getViewLifecycleOwner(), platforms -> {
-            if (platforms != null) {
-                ArrayAdapter<String> platformAdapter = new ArrayAdapter<>(
-                        requireContext(),
-                        android.R.layout.simple_dropdown_item_1line,
-                        platforms
-                );
-                platformDropdown.setAdapter(platformAdapter);
-                platformDropdown.setOnItemClickListener((parent, view, position, id) -> {
-                    selectedPlatform = platforms.get(position);
-                    updateActiveFilters();
-                });
-            }
-        });
+    private void setupDropdowns() {
+        // Configurar dropdown de plataformas
+        setupPlatformDropdown();
 
-        // Cargar géneros
-        viewModel.getGenres().observe(getViewLifecycleOwner(), genres -> {
-            if (genres != null) {
-                ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(
-                        requireContext(),
-                        android.R.layout.simple_dropdown_item_1line,
-                        genres
-                );
-                genreDropdown.setAdapter(genreAdapter);
-                genreDropdown.setOnItemClickListener((parent, view, position, id) -> {
-                    selectedGenre = genres.get(position);
-                    updateActiveFilters();
-                });
+        // Configurar dropdown de géneros
+        setupGenreDropdown();
+    }
+
+    private void setupPlatformDropdown() {
+        // Lista simplificada de plataformas principales
+        List<String> platforms = Arrays.asList(
+                "Todas las plataformas",
+                "PC",
+                "PlayStation 5",
+                "PlayStation 4",
+                "Xbox Series X/S",
+                "Xbox One",
+                "Nintendo Switch",
+                "iOS",
+                "Android",
+                "Nintendo 3DS",
+                "PS Vita",
+                "Wii U"
+        );
+
+        // Crear adaptador personalizado
+        CustomDropdownAdapter platformAdapter = new CustomDropdownAdapter(requireContext(), platforms);
+        platformDropdown.setAdapter(platformAdapter);
+
+        // Configuración del dropdown
+        platformDropdown.setText("Todas las plataformas", false);
+        platformDropdown.setDropDownHeight(600);
+
+        // Listener para selección
+        platformDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            selectedPlatform = platforms.get(position);
+            if (selectedPlatform.equals("Todas las plataformas")) {
+                selectedPlatform = null;
             }
+            updateActiveFilters();
         });
+    }
+
+    private void setupGenreDropdown() {
+        // Lista de géneros principales
+        List<String> genres = Arrays.asList(
+                "Todos los géneros",
+                "Acción",
+                "Aventura",
+                "RPG",
+                "Estrategia",
+                "Simulación",
+                "Deportes",
+                "Carreras",
+                "Puzzle",
+                "Shooter",
+                "Terror",
+                "Indie",
+                "Plataformas",
+                "Fighting",
+                "MMORPG"
+        );
+
+        CustomDropdownAdapter genreAdapter = new CustomDropdownAdapter(requireContext(), genres);
+        genreDropdown.setAdapter(genreAdapter);
+        genreDropdown.setText("Todos los géneros", false);
+        genreDropdown.setDropDownHeight(600);
+
+        genreDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            selectedGenre = genres.get(position);
+            if (selectedGenre.equals("Todos los géneros")) {
+                selectedGenre = null;
+            }
+            updateActiveFilters();
+        });
+    }
+
+    // Adaptador personalizado para dropdowns
+    public static class CustomDropdownAdapter extends ArrayAdapter<String> {
+
+        public CustomDropdownAdapter(@NonNull Context context, List<String> items) {
+            super(context, 0, items);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            return createItemView(position, convertView, parent);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+            return createItemView(position, convertView, parent);
+        }
+
+        private View createItemView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext())
+                        .inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+            }
+
+            TextView textView = convertView.findViewById(android.R.id.text1);
+            textView.setText(getItem(position));
+
+            // Aplicar estilos con los colores correctos
+            textView.setTextColor(ContextCompat.getColor(getContext(), R.color.text_primary));
+            textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.card_background));
+            textView.setPadding(48, 32, 48, 32);
+            textView.setTextSize(14);
+
+            return convertView;
+        }
+    }
+
+    private void loadFilterData() {
+        // Ya no necesario porque usamos listas estáticas optimizadas
+        // Si necesitas datos dinámicos de la API, puedes mantener este método
+        // pero ahora tienes una base sólida con las plataformas y géneros principales
     }
 
     private void toggleFilters() {
@@ -224,7 +314,7 @@ public class SearchFragment extends Fragment implements GameAdapter.OnGameClickL
         if (selectedPlatform != null && !selectedPlatform.isEmpty()) {
             addFilterChip(getString(R.string.platform) + ": " + selectedPlatform, () -> {
                 selectedPlatform = null;
-                platformDropdown.setText("");
+                platformDropdown.setText("Todas las plataformas", false);
                 updateActiveFilters();
             });
             hasActiveFilters = true;
@@ -234,7 +324,7 @@ public class SearchFragment extends Fragment implements GameAdapter.OnGameClickL
         if (selectedGenre != null && !selectedGenre.isEmpty()) {
             addFilterChip(getString(R.string.genre) + ": " + selectedGenre, () -> {
                 selectedGenre = null;
-                genreDropdown.setText("");
+                genreDropdown.setText("Todos los géneros", false);
                 updateActiveFilters();
             });
             hasActiveFilters = true;
@@ -271,9 +361,10 @@ public class SearchFragment extends Fragment implements GameAdapter.OnGameClickL
         chip.setText(text);
         chip.setCloseIconVisible(true);
         chip.setCheckable(false);
-        chip.setChipBackgroundColorResource(R.color.dark_surface);
-        chip.setTextColor(getResources().getColor(R.color.neon_blue, null));
-        chip.setCloseIconTint(getResources().getColorStateList(R.color.neon_blue, null));
+        // Usar colores correctos de tu paleta
+        chip.setChipBackgroundColorResource(R.color.card_background);
+        chip.setTextColor(getResources().getColor(R.color.primary_green, null));
+        chip.setCloseIconTint(getResources().getColorStateList(R.color.primary_green, null));
         chip.setOnCloseIconClickListener(v -> onRemove.run());
 
         activeFiltersChipGroup.addView(chip);
@@ -285,8 +376,8 @@ public class SearchFragment extends Fragment implements GameAdapter.OnGameClickL
         yearFrom = null;
         yearTo = null;
 
-        platformDropdown.setText("");
-        genreDropdown.setText("");
+        platformDropdown.setText("Todas las plataformas", false);
+        genreDropdown.setText("Todos los géneros", false);
         yearFromEditText.setText("");
         yearToEditText.setText("");
 

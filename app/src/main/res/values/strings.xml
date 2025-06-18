@@ -162,7 +162,7 @@
     <string name="copy">Copy</string>
 
     <!-- Search filters -->
-    <string name="filters">Filtros</string>
+    <string name="filters">Filters</string>
     <string name="hide_filters">Ocultar filtros</string>
     <string name="clear_filters">Limpiar filtros</string>
     <string name="apply_filters">Aplicar filtros</string>

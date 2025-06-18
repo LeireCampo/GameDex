@@ -4,7 +4,9 @@ import androidx.room.Embedded;
 import androidx.room.Junction;
 import androidx.room.Relation;
 
+import com.example.gamedex.data.local.entity.CustomTag;
 import com.example.gamedex.data.local.entity.Game;
+import com.example.gamedex.data.local.entity.GameCustomTagCrossRef;
 import com.example.gamedex.data.local.entity.GameTagCrossRef;
 import com.example.gamedex.data.local.entity.Tag;
 
@@ -18,10 +20,11 @@ public class GameWithTags {
             parentColumn = "id",
             entityColumn = "id",
             associateBy = @Junction(
-                    value = GameTagCrossRef.class,
+                    value = GameCustomTagCrossRef.class,
                     parentColumn = "gameId",
-                    entityColumn = "tagId"
+                    entityColumn = "customTagId"
             )
     )
-    public List<Tag> tags;
+    public List<CustomTag> tags;
+
 }

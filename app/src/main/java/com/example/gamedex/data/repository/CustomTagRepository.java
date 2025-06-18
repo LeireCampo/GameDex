@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import com.example.gamedex.data.local.dao.CustomTagDao;
 import com.example.gamedex.data.local.database.GameDexDatabase;
 import com.example.gamedex.data.local.entity.CustomTag;
+import com.example.gamedex.data.local.entity.Game;
 import com.example.gamedex.data.local.entity.GameCustomTagCrossRef;
 
 import java.util.List;
@@ -100,5 +101,9 @@ public class CustomTagRepository {
     // Métodos de mantenimiento
     public void cleanUnusedTags(String userId) {
         executorService.execute(() -> customTagDao.cleanUnusedTags(userId));
+    }
+
+    public LiveData<List<Game>> getGamesByCustomTag(int customTagId) {
+        return customTagDao.getGamesByCustomTag(customTagId);
     }
 }
